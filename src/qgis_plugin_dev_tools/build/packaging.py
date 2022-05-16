@@ -209,4 +209,4 @@ def copy_runtime_requirements(
                 ),
             )
 
-        source_file.write_text(contents)
+            source_file.write_text(contents)
