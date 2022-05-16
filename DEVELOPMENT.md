@@ -20,13 +20,13 @@ Verify code style with `pre-commit run --all-files`, or use `pre-commit install`
 
 ## Release steps
 
-- Set version number to the main branch
-  - Update version in `__init__.py`
-  - Add the version number and a release date to the unreleased section in the changelog, and link the version number to a tag url (for the tag created in next step)
-- Create a release from the main branch
-  - Create a `vX.X.X` style tag
-  - Create a release
+- Make a commit with the release version number in the files
+  - Update version tag in `__init__.py` with the release version number
+  - Update the  unreleased section with a release version number and a release date to the `CHANGELOG.md`, and link the version number to a tag url
+- Make another commit with the next development version number in the files
+  - Update version tag in `__init__.py` with the next development version number with a `.devX` suffix
+  - Add new unreleased section to the `CHANGELOG.md`
+- Merge these two commits to the main branch
+- Create a release from the first of these two commits
+  - Create a release with a version number title and a `vX.X.X` style tag
   - Action should trigger from the release and build and publish the package to PyPI
-- Set new development version number to the main branch
-  - Update version tag in `__init__.py` to be the next version with a `.devX` suffix
-  - Add new unreleased section to the changelog
