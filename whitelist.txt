@@ -25,3 +25,6 @@ qgs
 iface
 tcp
 pyplugin
+configs
+dest
+metavar

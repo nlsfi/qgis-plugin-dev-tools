@@ -21,12 +21,12 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import Callable, Optional, cast
+from typing import List
 
 from qgis_plugin_dev_tools import LOGGER as ROOT_LOGGER
 from qgis_plugin_dev_tools.build import make_plugin_zip
 from qgis_plugin_dev_tools.config import DevToolsConfig
-from qgis_plugin_dev_tools.config.dotenv import read_dotenv_config
+from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
 from qgis_plugin_dev_tools.start import launch_development_qgis
 from qgis_plugin_dev_tools.start.config import DevelopmentModeConfig
 from qgis_plugin_dev_tools.utils.distributions import (
@@ -36,48 +36,13 @@ from qgis_plugin_dev_tools.utils.distributions import (
 LOGGER = logging.getLogger(__name__)
 
 
-def run() -> None:
-    parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
-
-    commands = parser.add_subparsers(
-        title="commands",
-    )
-
-    start_parser = commands.add_parser(
-        "start",
-        aliases=["s"],
-        help="start QGIS with plugin in development mode",
-    )
-    start_parser.add_argument("--verbose", "-v", action="count", default=0)
-    start_parser.set_defaults(callback=start)
-
-    build_parser = commands.add_parser(
-        "build",
-        aliases=["b"],
-        help="build the plugin",
-    )
-    build_parser.add_argument("--verbose", "-v", action="count", default=0)
-    build_parser.set_defaults(callback=build)
-
-    result = parser.parse_args()
-
-    ROOT_LOGGER.setLevel(logging.DEBUG if result.verbose > 0 else logging.INFO)
-
-    callback = cast(Optional[Callable[[], None]], getattr(result, "callback", None))
-    if callback is None:
-        parser.print_help()
-    else:
-        callback()
-
-
-def start() -> None:
+def start(dotenv_file_paths: List[Path]) -> None:
     # TODO: allow choosing pyproject file from cli?
     dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
-    # TODO: allow choosing .env file from cli?
     # TODO: allow setting debugger flag from cli?
     # TODO: find default executable paths to allow zero-config .env?
     # TODO: rglob('metadata.txt') from cwd to allow zero-config pyproject.toml?
-    dotenv_config = read_dotenv_config(Path(".env"))
+    dotenv_config = read_dotenv_configs(dotenv_file_paths)
     LOGGER.info(
         "launching development qgis for plugin %s", dev_tools_config.plugin_package_name
     )
@@ -109,3 +74,59 @@ def build() -> None:
     )
     # TODO: allow choosing output path from cli?
     make_plugin_zip(dev_tools_config, target_directory_path=Path("dist"))
+
+
+parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
+
+common_parser = argparse.ArgumentParser(add_help=False)
+common_parser.add_argument(
+    "-v",
+    "--verbose",
+    action="store_true",
+    help="use debug logging level",
+)
+
+commands = parser.add_subparsers(required=True, dest="subcommand")
+
+start_parser = commands.add_parser(
+    "start",
+    aliases=["s"],
+    help="start QGIS with plugin in development mode",
+    parents=[common_parser],
+)
+start_parser.add_argument(
+    "-e",
+    "--env-file",
+    action="append",
+    metavar="<file>",
+    dest="extra_dotenv_files",
+    default=[],
+    help="read config from a .env file (can be specified multiple times)",
+)
+
+build_parser = commands.add_parser(
+    "build",
+    aliases=["b"],
+    help="build the plugin",
+    parents=[common_parser],
+)
+
+
+def run() -> None:
+    result = vars(parser.parse_args())
+
+    ROOT_LOGGER.setLevel(logging.DEBUG if result.get("verbose") else logging.INFO)
+
+    LOGGER.debug(f"parsed cli args {result}")
+
+    if result.get("subcommand") in ["start", "s"]:
+        dotenv_file_paths = [Path(".env")] + [
+            Path(f) for f in result.get("extra_dotenv_files", [])
+        ]
+        start(dotenv_file_paths)
+
+    elif result.get("subcommand") in ["build", "b"]:
+        build()
+
+    else:
+        parser.print_usage()

@@ -41,7 +41,7 @@ By default config is read from `pyproject.toml`, changelog notes from `CHANGELOG
 
 Run `qgis-plugin-dev-tools start` (short `qpdt s`) to launch QGIS with the plugin installed and ready for development.
 
-By default config is read from `pyproject.toml` and runtime config from `.env` in the current working directory. `.env` must configure the executable path, and may configure debugger, profile name and any extra runtime variables necessary for the plugin.
+By default config is read from `pyproject.toml` and runtime config from `.env` in the current working directory. Extra environment files can be passed using `-e` flag. `.env` must configure the executable path, and may configure debugger, profile name and any extra runtime variables necessary for the plugin.
 
 ```sh
 QGIS_EXECUTABLE_PATH= # path to qgis-bin/qgis-bin-ltr or .exe equivalents, necessary

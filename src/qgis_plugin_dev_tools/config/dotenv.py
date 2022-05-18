@@ -19,7 +19,7 @@
 
 import logging
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from dotenv import dotenv_values
 
@@ -54,9 +54,11 @@ class DotenvConfig:  # noqa SIM119
         self.runtime_environment = other_vars
 
 
-def read_dotenv_config(dotenv_file_path: Path) -> DotenvConfig:
-    LOGGER.debug("reading config from %s", dotenv_file_path.resolve())
-    config = dotenv_values(dotenv_file_path, verbose=False, encoding="utf-8")
+def read_dotenv_configs(dotenv_file_paths: List[Path]) -> DotenvConfig:
+    config = {}
+    for dotenv_file_path in dotenv_file_paths:
+        LOGGER.debug("reading config from %s", dotenv_file_path.resolve())
+        config.update(dotenv_values(dotenv_file_path, verbose=False, encoding="utf-8"))
     try:
         return DotenvConfig(**{k: v for k, v in config.items() if v})
     except (KeyError, TypeError) as e:
