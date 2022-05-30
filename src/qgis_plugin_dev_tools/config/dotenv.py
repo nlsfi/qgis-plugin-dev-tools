@@ -56,7 +56,7 @@ class DotenvConfig:  # noqa SIM119
 
 def read_dotenv_config(dotenv_file_path: Path) -> DotenvConfig:
     LOGGER.debug("reading config from %s", dotenv_file_path.resolve())
-    config = dotenv_values(dotenv_file_path, verbose=False)
+    config = dotenv_values(dotenv_file_path, verbose=False, encoding="utf-8")
     try:
         return DotenvConfig(**{k: v for k, v in config.items() if v})
     except (KeyError, TypeError) as e:

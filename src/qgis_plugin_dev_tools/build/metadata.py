@@ -28,5 +28,5 @@ def update_metadata_file(
     parser.read(metadata_file_path, encoding="utf-8")
     parser.set("general", "version", version)
     parser.set("general", "changelog", changelog_contents)
-    with open(metadata_file_path, "w") as metadata_file:
+    with open(metadata_file_path, "w", encoding="utf-8") as metadata_file:
         parser.write(metadata_file)

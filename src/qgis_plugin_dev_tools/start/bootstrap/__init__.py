@@ -52,13 +52,13 @@ def create_bootstrap_file(
         LOGGER.debug("using bootstrap config:\n%s", bootstrap_config)
 
         bootstrap_template_contents = resources.read_text(
-            __name__, "template.py"
+            __name__, "template.py", encoding="utf-8"
         ).replace(
             'b"$DATACLASS_AS_PICKLED_DICT$"',
             repr(pickle.dumps(dataclasses.asdict(bootstrap_config))),
         )
 
         bootstrap_file_path = Path(temp_dir) / "bootstrap.py"
-        bootstrap_file_path.write_text(bootstrap_template_contents)
+        bootstrap_file_path.write_text(bootstrap_template_contents, encoding="utf-8")
 
         yield bootstrap_file_path

@@ -163,7 +163,7 @@ def copy_runtime_requirements(
         LOGGER.debug("rewriting imports for %s", package_name)
 
         for source_file in (build_directory_path / plugin_package_name).rglob("*.py"):
-            contents = source_file.read_text()
+            contents = source_file.read_text(encoding="utf-8")
 
             # special case where a submodule of the vendored package is imported
             # or the name is defined in a sys.modules key as a constant
@@ -177,7 +177,7 @@ def copy_runtime_requirements(
                 # hold on to the original for license comments
                 # since comments are lost with ast parse+unparse
                 orig_file = source_file.with_name(source_file.name + "_original")
-                orig_file.write_text(contents)
+                orig_file.write_text(contents, encoding="utf-8")
                 original_note = (
                     "# parsed with ast, see original at "
                     f'"{orig_file.relative_to(build_directory_path).as_posix()}"\n\n'
@@ -209,4 +209,4 @@ def copy_runtime_requirements(
                 ),
             )
 
-            source_file.write_text(contents)
+            source_file.write_text(contents, encoding="utf-8")

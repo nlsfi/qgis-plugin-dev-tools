@@ -31,7 +31,7 @@ def get_latest_changelog_sections(changelog_file_path: Path, count: int = 3) -> 
     )
     lines = []
     found = 0
-    for line in changelog_file_path.read_text().splitlines():
+    for line in changelog_file_path.read_text(encoding="utf-8").splitlines():
         if found == 0 and not line.startswith("## "):
             continue
         if line.startswith("## "):
@@ -52,7 +52,7 @@ def get_latest_changelog_version_identifier(changelog_file_path: Path) -> str:
     LOGGER.debug(
         "finding latest version tag from changelog %s", changelog_file_path.resolve()
     )
-    for line in changelog_file_path.read_text().splitlines():
+    for line in changelog_file_path.read_text(encoding="utf-8").splitlines():
         if line.startswith("## "):
             return line.split(" ", maxsplit=2)[1]
     raise ValueError("latest version could not be parsed from changelog")
