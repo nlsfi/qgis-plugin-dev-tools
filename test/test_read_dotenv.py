@@ -12,7 +12,7 @@ def create_dotenv_with_contents(tmpdir):
     dotenv_file_path = Path(tmpdir) / ".env"
 
     def write_contents_from_list(contents: List[str]):
-        dotenv_file_path.write_text("\n".join(contents))
+        dotenv_file_path.write_text("\n".join(contents), encoding="utf-8")
         return dotenv_file_path
 
     return write_contents_from_list

@@ -11,7 +11,7 @@ def create_pyproject_toml_with_contents(tmpdir):
     toml_file_path = Path(tmpdir) / "test.toml"
 
     def write_contents_from_list(contents: List[str]):
-        toml_file_path.write_text("\n".join(contents))
+        toml_file_path.write_text("\n".join(contents), encoding="utf-8")
         return toml_file_path
 
     return write_contents_from_list
