@@ -23,6 +23,8 @@ import sys
 from pathlib import Path
 from typing import List
 
+from importlib_metadata import entry_points
+
 from qgis_plugin_dev_tools import LOGGER as ROOT_LOGGER
 from qgis_plugin_dev_tools.build import make_plugin_zip
 from qgis_plugin_dev_tools.config import DevToolsConfig
@@ -46,6 +48,9 @@ def start(dotenv_file_paths: List[Path]) -> None:
     LOGGER.info(
         "launching development qgis for plugin %s", dev_tools_config.plugin_package_name
     )
+
+    entry_points_found_from_python_env = entry_points(group="qgis_plugin_dev_tools")
+
     launch_development_qgis(
         DevelopmentModeConfig(
             qgis_executable_path=dotenv_config.QGIS_EXECUTABLE_PATH,
@@ -60,6 +65,11 @@ def start(dotenv_file_paths: List[Path]) -> None:
                 for name in get_distribution_top_level_package_names(dist)
             ],
             debugger_library=dotenv_config.DEBUGGER_LIBRARY,
+            extra_plugin_package_names=[
+                entry_point.name
+                for entry_point in entry_points_found_from_python_env
+                if entry_point.name != dev_tools_config.plugin_package_name
+            ],
         )
     )
 

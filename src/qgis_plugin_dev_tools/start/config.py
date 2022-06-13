@@ -32,3 +32,4 @@ class DevelopmentModeConfig:
     plugin_package_name: str
     plugin_dependency_package_names: List[str]
     debugger_library: Optional[str]
+    extra_plugin_package_names: List[str]
