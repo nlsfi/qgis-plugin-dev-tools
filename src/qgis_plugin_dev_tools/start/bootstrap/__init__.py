@@ -47,6 +47,7 @@ def create_bootstrap_file(
             plugin_dependency_package_names=development_mode_configuration.plugin_dependency_package_names,  # noqa E501
             debugger_library=development_mode_configuration.debugger_library,
             bootstrap_python_executable_path=Path(sys.executable),
+            extra_plugin_package_names=development_mode_configuration.extra_plugin_package_names,  # noqa E501
         )
 
         LOGGER.debug("using bootstrap config:\n%s", bootstrap_config)

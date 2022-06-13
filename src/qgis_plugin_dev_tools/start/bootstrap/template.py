@@ -18,11 +18,13 @@
 #  along with qgis-plugin-dev-tools. If not, see <https://www.gnu.org/licenses/>.
 
 import atexit
+import contextlib
 import functools
 import os
 import pickle
 import sys
 from dataclasses import asdict, dataclass
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -52,7 +54,7 @@ def _unload_package_modules(package_names: List[str]) -> None:
             pass
 
 
-def _monkeypatch_plugin_unload_to_unload_dependencies(
+def _monkeypatch_plugin_module_unload_to_unload_dependencies(
     plugin_package_name: str, plugin_dependency_package_names: List[str]
 ) -> None:
     from qgis.core import Qgis, QgsMessageLog
@@ -84,6 +86,44 @@ def _monkeypatch_plugin_unload_to_unload_dependencies(
         qgis_utils_module._unloadPluginModules = _custom_unload
 
 
+def _monkeypatch_plugin_reload_to_reload_extra_plugins(
+    main_plugin_package_name: str, extra_plugin_package_names: List[str]
+) -> None:
+    from qgis.core import Qgis, QgsMessageLog
+    from qgis.utils import loadPlugin as _original_load  # noqa N813 (qgis naming)
+    from qgis.utils import startPlugin
+    from qgis.utils import unloadPlugin as _original_unload  # noqa N813 (qgis naming)
+
+    def _custom_unload(packageName: str) -> bool:  # noqa N803 (qgis naming)
+        original_return = _original_unload(packageName)
+
+        if packageName == main_plugin_package_name:
+            for plugin_package_name in extra_plugin_package_names:
+                with contextlib.suppress(Exception):
+                    _original_unload(plugin_package_name)
+
+        return original_return
+
+    def _custom_load(packageName: str) -> bool:  # noqa N803 (qgis naming)
+        if packageName == main_plugin_package_name:
+            for plugin_package_name in extra_plugin_package_names:
+                with contextlib.suppress(Exception):
+                    _original_load(plugin_package_name)
+                    startPlugin(plugin_package_name)
+                    QgsMessageLog.logMessage(
+                        f"activating {plugin_package_name} plugin",
+                        "Bootstrap",
+                        level=Qgis.Info,
+                    )
+
+        return _original_load(packageName)
+
+    import qgis.utils as qgis_utils_module
+
+    qgis_utils_module.unloadPlugin = _custom_unload
+    qgis_utils_module.loadPlugin = _custom_load
+
+
 def _setup_runtime_library_paths(runtime_library_paths: List[Path]) -> None:
     from qgis.core import Qgis, QgsMessageLog
 
@@ -100,6 +140,25 @@ def _setup_runtime_environment(runtime_environment: Dict[str, str]) -> None:
     os.environ.update(runtime_environment)
 
 
+def _enable_extra_plugins(
+    main_plugin_package_name: str, extra_plugin_package_names: List[str]
+) -> None:
+    from qgis.PyQt.QtCore import QSettings
+    from qgis.utils import plugin_paths, unloadPlugin
+
+    for plugin_package_name in extra_plugin_package_names:
+        spec = find_spec(plugin_package_name)
+        if spec is not None and spec.origin is not None:
+            parent_path = Path(spec.origin).parent.parent
+            plugin_paths.append(str(parent_path))
+            unloadPlugin(plugin_package_name)
+            QSettings().setValue(f"PythonPlugins/{plugin_package_name}", "true")
+
+    _monkeypatch_plugin_reload_to_reload_extra_plugins(
+        main_plugin_package_name, extra_plugin_package_names
+    )
+
+
 def _enable_plugin(
     plugin_package_name: str,
     plugin_package_path: Path,
@@ -108,7 +167,14 @@ def _enable_plugin(
     from pyplugin_installer.installer_data import plugins as installer_plugins
     from qgis.core import Qgis, QgsMessageLog
     from qgis.PyQt.QtCore import QSettings
-    from qgis.utils import loadPlugin, plugin_paths, startPlugin, updateAvailablePlugins
+    from qgis.utils import (
+        loadPlugin,
+        plugin_paths,
+        reloadPlugin,
+        startPlugin,
+        unloadPlugin,
+        updateAvailablePlugins,
+    )
 
     # if plugin dialog info is not necessary, its possible to just inject the data
     # here as a configparser instance to qgis.utils.plugins_metadata_parser
@@ -145,12 +211,13 @@ def _enable_plugin(
         level=Qgis.Info,
     )
 
-    _monkeypatch_plugin_unload_to_unload_dependencies(
+    _monkeypatch_plugin_module_unload_to_unload_dependencies(
         plugin_package_name, plugin_dependency_package_names
     )
 
     plugin_paths.append(str(plugin_package_path.parent))
     updateAvailablePlugins()
+    unloadPlugin(plugin_package_name)
     loadPlugin(plugin_package_name)
     startPlugin(plugin_package_name)
     QSettings().setValue(f"PythonPlugins/{plugin_package_name}", "true")
@@ -161,6 +228,11 @@ def _enable_plugin(
         "Bootstrap",
         level=Qgis.Info,
     )
+
+    # Make sure Plugin Reloader plugin (3rd party plugin for QGIS plugin development)
+    # will use monkeypatched load and unload functions.
+    # https://github.com/borysiasty/plugin_reloader
+    reloadPlugin("plugin_reloader")
 
 
 def _start_debugger(library_name: Optional[str], python_executable_path: Path) -> None:
@@ -209,6 +281,7 @@ class BootstrapConfig:
     plugin_dependency_package_names: List[str]
     debugger_library: Optional[str]
     bootstrap_python_executable_path: Path
+    extra_plugin_package_names: List[str]
 
     def __str__(self) -> str:
         result = ""
@@ -238,6 +311,9 @@ def _do_bootstrap(config: BootstrapConfig) -> None:
 
         _setup_runtime_library_paths(config.runtime_library_paths)
         _setup_runtime_environment(config.runtime_environment)
+        _enable_extra_plugins(
+            config.plugin_package_name, config.extra_plugin_package_names
+        )
         _enable_plugin(
             config.plugin_package_name,
             config.plugin_package_path,

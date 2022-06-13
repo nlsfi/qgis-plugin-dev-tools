@@ -56,6 +56,19 @@ Development mode bootstraps the launched QGIS to have access to any packages ava
 
 Additionally editable installs for the plugin dependencies are supported. For example with a dependency to `some_pypi_package`, use `pip install -e /path/to/some_pypi_package` to provide `some_pypi_package` in editable mode from a local directory, and use [Plugin Reloader] to refresh new code when its changed on disk. This will also reload the declared dependencies.
 
+### Developing multiple plugins
+
+Development mode also enables using and developing multiple plugins easily if certain requirements are satisfied for all extra plugins:
+
+* Extra plugin must be installable python packages
+  * See e.g. [Quickstart for setuptools]
+* Extra plugin must have entry point in group "qgis_plugin_dev_tools"
+  * See for example: [Entry point usage with setuptools]
+  * Use plugin package name for entry point name
+* Extra plugin needs to be installed in the same python environment where this tool is run in
+
+Extra plugins are loaded on launch and reloaded together with the main plugin if [Plugin Reloader] is used.
+
 ## Development of qgis-plugin-dev-tools
 
 See [development readme](./DEVELOPMENT.md).
@@ -68,3 +81,5 @@ Copyright (C) 2022 [National Land Survey of Finland].
 
 [Plugin Reloader]: https://plugins.qgis.org/plugins/plugin_reloader
 [National Land Survey of Finland]: https://www.maanmittauslaitos.fi/en
+[Quickstart for setuptools]: https://setuptools.pypa.io/en/latest/userguide/quickstart.html
+[Entry point usage with setuptools]: https://setuptools.pypa.io/en/latest/userguide/entry_point.html#advertising-behavior
