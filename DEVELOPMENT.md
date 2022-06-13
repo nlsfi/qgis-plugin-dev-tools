@@ -21,10 +21,10 @@ Verify code style with `pre-commit run --all-files`, or use `pre-commit install`
 ## Release steps
 
 - Make a commit with the release version number in the files
-  - Update version tag in `__init__.py` with the release version number
-  - Update the  unreleased section with a release version number and a release date to the `CHANGELOG.md`, and link the version number to a tag url
+  - Update version tag in `__init__.py` with the release version number (remove `.post0` suffix and update accordingly)
+  - Replace the unreleased section title with a release version number and a release date to the `CHANGELOG.md`, and link the version number to a tag url (tag is created later). Do no leave the title "Unreleased" in the file at this commit.
 - Make another commit with the next development version number in the files
-  - Update version tag in `__init__.py` with the next development version number with a `.devX` suffix
+  - Add `.post0` suffix to version number in `__init__.py` to indicate new development version
   - Add new unreleased section to the `CHANGELOG.md`
 - Merge these two commits to the main branch
 - Create a release from the first of these two commits
