@@ -147,10 +147,19 @@ def _enable_extra_plugins(
     from qgis.utils import plugin_paths, unloadPlugin
 
     for plugin_package_name in extra_plugin_package_names:
+
+        if plugin_package_name in available_plugins:
+            QgsMessageLog.logMessage(
+                f"extra {plugin_package_name} plugin is already installed, ",
+                "Bootstrap",
+                level=Qgis.Warning,
+            )
+
         spec = find_spec(plugin_package_name)
         if spec is not None and spec.origin is not None:
             parent_path = Path(spec.origin).parent.parent
             plugin_paths.append(str(parent_path))
+            updateAvailablePlugins()
             unloadPlugin(plugin_package_name)
             QSettings().setValue(f"PythonPlugins/{plugin_package_name}", "true")
 
@@ -168,7 +177,10 @@ def _enable_plugin(
     from qgis.core import Qgis, QgsMessageLog
     from qgis.PyQt.QtCore import QSettings
     from qgis.utils import (
+        available_plugins,
         loadPlugin,
+        plugins,
+        plugins_metadata_parser,
         plugin_paths,
         reloadPlugin,
         startPlugin,
@@ -205,6 +217,22 @@ def _enable_plugin(
     # )
     # plugins_metadata_parser["my_plugin"] = config
 
+    if plugin_package_name in available_plugins:
+        QgsMessageLog.logMessage(
+            f"can not not enable {plugin_package_name} plugin for development mode: plugin is already installed",
+            "Bootstrap",
+            level=Qgis.Critical,
+        )
+        QgsMessageLog.logMessage(
+            (
+                "this error might be caused by the plugin being previously installed via plugin manager, "
+                "uninstall the existing plugin manually before re-launching development mode"
+            ),
+            "Bootstrap",
+            level=Qgis.Info,
+        )
+        return
+
     QgsMessageLog.logMessage(
         f"activating {plugin_package_name} plugin",
         "Bootstrap",
@@ -220,6 +248,8 @@ def _enable_plugin(
     unloadPlugin(plugin_package_name)
     loadPlugin(plugin_package_name)
     startPlugin(plugin_package_name)
+    plugins[plugin_package_name]["canBeUninstalled"] = "False"
+    plugins_metadata_parser[plugin_package_name]["canBeUninstalled"] = "False"
     QSettings().setValue(f"PythonPlugins/{plugin_package_name}", "true")
     installer_plugins.getAllInstalled()
 

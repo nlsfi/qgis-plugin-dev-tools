@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: better logging for already installed plugin packages
+
 ## [0.2.0] - 2022-06-13
 
 - Feat: enable extra plugins in development mode
