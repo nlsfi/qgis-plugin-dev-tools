@@ -19,9 +19,14 @@
 
 import logging
 import shutil
+import sys
+from importlib_metadata import Distribution
 from pathlib import Path
 
-from qgis_plugin_dev_tools.build.rewrite_imports import rewrite_imports_in_source_file, insert_as_first_import
+from qgis_plugin_dev_tools.build.rewrite_imports import (
+    rewrite_imports_in_source_file,
+    insert_as_first_import,
+)
 from qgis_plugin_dev_tools.config import DevToolsConfig
 from qgis_plugin_dev_tools.utils.distributions import (
     get_distribution_top_level_package_names,
@@ -70,6 +75,14 @@ def copy_runtime_requirements(
     # copy dist infos (licenses etc.) and all provided top level packages
     for dist in dev_tools_config.runtime_distributions:
         dist_info_path = Path(dist._path)  # type: ignore
+        if Path(sys.base_prefix) in dist_info_path.parent.parents:
+            # If QGIS Python includes the dependency, it does not have to be bundled
+            LOGGER.debug(
+                "skipping runtime requirement %s because it is included in QGIS",
+                dist.metadata["Name"],
+            )
+            continue
+
         dist_top_level_packages = get_distribution_top_level_package_names(dist)
 
         LOGGER.debug(
@@ -100,22 +113,12 @@ def copy_runtime_requirements(
             ignore=IGNORED_FILES,
         )
         for package_name in dist_top_level_packages:
-            LOGGER.debug(
-                "bundling runtime requirement %s package %s",
-                dist.metadata["Name"],
+            _copy_package(
+                build_directory_path,
+                dist,
+                dist_info_path,
                 package_name,
-            )
-            LOGGER.debug(
-                "copying %s to build directory",
-                (dist_info_path.parent / package_name).resolve(),
-            )
-            shutil.copytree(
-                src=dist_info_path.parent / package_name,
-                dst=build_directory_path
-                / plugin_package_name
-                / "_vendor"
-                / package_name,
-                ignore=IGNORED_FILES,
+                plugin_package_name,
             )
 
     if dev_tools_config.append_distributions_to_path:
@@ -132,3 +135,58 @@ def copy_runtime_requirements(
                 rewritten_package_name=package_name,
                 container_package_name=f"{plugin_package_name}._vendor",
             )
+
+
+def _copy_package(
+    build_directory_path: Path,
+    dist: Distribution,
+    dist_info_path: Path,
+    package_name: str,
+    plugin_package_name: str,
+) -> None:
+    LOGGER.debug(
+        "bundling runtime requirement %s package %s",
+        dist.metadata["Name"],
+        package_name,
+    )
+    LOGGER.debug(
+        "copying %s to build directory",
+        (dist_info_path.parent / package_name).resolve(),
+    )
+
+    # Full package
+    dist_src = dist_info_path.parent / package_name
+    if dist_src.exists():
+        shutil.copytree(
+            src=dist_src,
+            dst=build_directory_path / plugin_package_name / "_vendor" / package_name,
+            ignore=IGNORED_FILES,
+        )
+        return
+
+    # Single module
+    dist_src = dist_info_path.parent / f"{package_name}.py"
+    if dist_src.exists():
+        shutil.copy(
+            src=dist_src, dst=build_directory_path / plugin_package_name / "_vendor"
+        )
+        return
+
+    # pyd file
+    pyd_files = list(dist_info_path.parent.glob(f"{package_name}*.pyd"))
+    if pyd_files:
+        for dist_src in pyd_files:
+            shutil.copy(
+                src=dist_src, dst=build_directory_path / plugin_package_name / "_vendor"
+            )
+        return
+    if not package_name.startswith("_"):
+        raise ValueError(
+            f"Sources for runtime requirement {dist.metadata['Name']} "
+            f"cannot be found in {dist_info_path.parent}"
+        )
+
+    LOGGER.warning(
+        "Could not find path %s",
+        (dist_info_path.parent / package_name).resolve(),
+    )
