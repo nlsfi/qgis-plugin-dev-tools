@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: Add an option to append vendor package to the Python Path
+- Feat: Add an option to bundle requirements of the requirements recursively
+- Feat: Add module packages and .pyd files to the bundle if found
+- Chore: Drop support from Python < 3.9
+
 ## [0.2.1] - 2022-07-07
 
 - Fix: Correct some plain import rewrites
