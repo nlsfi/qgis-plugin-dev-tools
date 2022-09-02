@@ -57,7 +57,8 @@ use_dangerous_vendor_sys_path_append = true
 
 Run `qgis-plugin-dev-tools build` (short `qpdt b`) to package the plugin and any runtime dependencies to a standard QGIS plugin zip file, that can be installed and published.
 
-By default config is read from `pyproject.toml`, changelog notes from `CHANGELOG.md`, version from latest changelog item title, and package is created in a `dist` directory in the current working directory. Changelog contents and version number are inserted to the `metadata.txt` file, so the version and changelog sections do not need manual updates.
+By default config is read from `pyproject.toml`, changelog notes from `CHANGELOG.md`, version from latest changelog item title, and package is created in a `dist` directory in the current working directory. Changelog contents and version number are inserted to the `metadata.txt` file, so the version and changelog sections do not need manual updates. Optionally the version number can also be provided as an argument: `qpdt b --version 0.1.0-rc2`.
+
 
 ## Plugin development mode
 

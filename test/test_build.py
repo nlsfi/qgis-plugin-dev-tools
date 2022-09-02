@@ -138,9 +138,11 @@ def test_make_zip_with_minimal_config(
     dev_tools_config_minimal: "DevToolsConfig", plugin_dir: Path, tmp_path: Path
 ):
     target_path = tmp_path / "dist"
-    expected_zip = target_path / "Plugin-0.1.0.zip"
+    expected_zip = target_path / "Plugin-test-version.zip"
 
-    make_plugin_zip(dev_tools_config_minimal, target_path)
+    make_plugin_zip(
+        dev_tools_config_minimal, target_path, plugin_version="test-version"
+    )
 
     assert target_path.exists()
     assert expected_zip.exists()
