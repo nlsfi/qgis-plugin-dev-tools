@@ -53,12 +53,12 @@ class DevToolsConfig:
         ]
         self.changelog_file_path = changelog_file_path
         self.append_distributions_to_path = append_distributions_to_path
+        self.extra_runtime_distributions = []
 
         if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
-            self.runtime_distributions = list(
+            self.extra_runtime_distributions = list(
                 ChainMap(
-                    {dist.name: dist for dist in self.runtime_distributions},
                     *(
                         get_distribution_requirements(dist)
                         for dist in self.runtime_distributions
