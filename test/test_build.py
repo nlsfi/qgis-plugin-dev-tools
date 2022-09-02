@@ -67,7 +67,7 @@ def dev_tools_config(plugin_dir: Path):
         plugin_package_name="Plugin",
         runtime_requires=["pytest"],
         changelog_file_path=plugin_dir / "CHANGELOG.md",
-        append_distributions_to_path=(True),
+        append_distributions_to_path=True,
     )
 
 
@@ -130,5 +130,5 @@ def _get_file_names(zip_file: Path, prefix: str) -> Set[str]:
 
 
 def _get_file_from_zip(zip_file: Path, file_path: str) -> str:
-    f = zipfile.Path(zip_file, at=file_path)
-    return f.read_text()
+    with zipfile.ZipFile(zip_file) as z, z.open(file_path) as f:
+        return f.read().decode("UTF-8")
