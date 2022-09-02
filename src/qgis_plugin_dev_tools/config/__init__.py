@@ -17,6 +17,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with qgis-plugin-dev-tools. If not, see <https://www.gnu.org/licenses/>.
 
+from collections import ChainMap
 from pathlib import Path
 from typing import List
 
@@ -24,6 +25,7 @@ from importlib_metadata import Distribution, distribution
 from packaging.requirements import Requirement
 
 from qgis_plugin_dev_tools.config.pyproject import read_pyproject_config
+from qgis_plugin_dev_tools.utils.distributions import get_distribution_requirements
 
 
 class DevToolsConfig:
@@ -50,6 +52,18 @@ class DevToolsConfig:
         ]
         self.changelog_file_path = changelog_file_path
         self.append_distributions_to_path = append_distributions_to_path
+
+        if append_distributions_to_path:
+            # Add the requirements of the distributions as well
+            self.runtime_distributions = list(
+                ChainMap(
+                    {dist.name: dist for dist in self.runtime_distributions},
+                    *(
+                        get_distribution_requirements(dist)
+                        for dist in self.runtime_distributions
+                    )
+                ).values()
+            )
 
     @staticmethod
     def from_pyproject_config(pyproject_file_path: Path) -> "DevToolsConfig":
