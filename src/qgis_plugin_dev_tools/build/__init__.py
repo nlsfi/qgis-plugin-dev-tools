@@ -22,6 +22,7 @@ import os
 import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Optional
 
 from qgis_plugin_dev_tools.build.changelog_parser import (
     get_latest_changelog_sections,
@@ -38,14 +39,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 def make_plugin_zip(
-    dev_tools_config: DevToolsConfig, target_directory_path: Path
+    dev_tools_config: DevToolsConfig,
+    target_directory_path: Path,
+    plugin_version: Optional[str] = None,
 ) -> None:
     # TODO: make setuptools wrapper and use this code when creating the sdist/wheel?
 
     changelog_contents = get_latest_changelog_sections(
         dev_tools_config.changelog_file_path
     )
-    version = get_latest_changelog_version_identifier(
+    version = plugin_version or get_latest_changelog_version_identifier(
         dev_tools_config.changelog_file_path
     )
     zip_name = f"{dev_tools_config.plugin_package_name}-{version}"

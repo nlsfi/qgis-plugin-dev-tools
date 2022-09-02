@@ -21,7 +21,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from importlib_metadata import entry_points
 
@@ -74,7 +74,7 @@ def start(dotenv_file_paths: List[Path]) -> None:
     )
 
 
-def build() -> None:
+def build(plugin_version: Optional[str]) -> None:
     # TODO: allow choosing pyproject file from cli?
     dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
     LOGGER.info("building plugin package %s", dev_tools_config.plugin_package_name)
@@ -83,7 +83,11 @@ def build() -> None:
         dev_tools_config.plugin_package_path.resolve(),
     )
     # TODO: allow choosing output path from cli?
-    make_plugin_zip(dev_tools_config, target_directory_path=Path("dist"))
+    make_plugin_zip(
+        dev_tools_config,
+        target_directory_path=Path("dist"),
+        plugin_version=plugin_version,
+    )
 
 
 parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
@@ -120,6 +124,14 @@ build_parser = commands.add_parser(
     help="build the plugin",
     parents=[common_parser],
 )
+build_parser.add_argument(
+    "--version",
+    metavar="<version>",
+    dest="plugin_version",
+    type=str,
+    default="",
+    help="version of the plugin (leave empty to get the version from the CHANGELOG.md)",
+)
 
 
 def run() -> None:
@@ -136,7 +148,8 @@ def run() -> None:
         start(dotenv_file_paths)
 
     elif result.get("subcommand") in ["build", "b"]:
-        build()
+        plugin_version = str(result.get("plugin_version"))
+        build(plugin_version)
 
     else:
         parser.print_usage()
