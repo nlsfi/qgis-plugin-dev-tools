@@ -61,7 +61,9 @@ def test_requires_allowed_empty(create_pyproject_toml_with_contents):
         ]
     )
 
-    assert read_pyproject_config(test_file).runtime_requires == []
+    result = read_pyproject_config(test_file)
+    assert result.runtime_requires == []
+    assert not result.use_dangerous_vendor_sys_path_append
 
 
 def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
@@ -70,6 +72,7 @@ def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
             "[tool.qgis_plugin_dev_tools]",
             'plugin_package_name = "testing"',
             'runtime_requires = ["one", "another"]',
+            "use_dangerous_vendor_sys_path_append = true",
         ]
     )
 
@@ -77,3 +80,4 @@ def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
 
     assert result.plugin_package_name == "testing"
     assert result.runtime_requires == ["one", "another"]
+    assert result.use_dangerous_vendor_sys_path_append

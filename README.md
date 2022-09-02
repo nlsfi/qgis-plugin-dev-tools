@@ -31,6 +31,17 @@ runtime_requires = [
 ]
 ```
 
+If the plugin runtime dependencies do not work with the aforementioned configuration, the dependencies can be added to the Python Path with `use_dangerous_vendor_sys_path_append` flag. This method might be **unsafe** if there are conflicts between dependency versions of different plugins.
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+runtime_requires = [
+    "some_pypi_package_with_binary_files"
+]
+use_dangerous_vendor_sys_path_append = true
+```
+
 ## Plugin packaging
 
 Run `qgis-plugin-dev-tools build` (short `qpdt b`) to package the plugin and any runtime dependencies to a standard QGIS plugin zip file, that can be installed and published.

@@ -116,3 +116,9 @@ def rewrite_imports_in_source_file(
     )
 
     source_file.write_text(contents, encoding="utf-8")
+
+
+def insert_as_first_import(plugin_init_file: Path, import_string: str) -> None:
+    contents = plugin_init_file.read_text(encoding="utf-8")
+    contents = f"import {import_string}\n" + contents
+    plugin_init_file.write_text(contents, encoding="utf-8")

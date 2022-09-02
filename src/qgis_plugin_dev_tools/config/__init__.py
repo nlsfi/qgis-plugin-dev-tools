@@ -31,12 +31,14 @@ class DevToolsConfig:
     plugin_package_path: Path
     runtime_distributions: List[Distribution]
     changelog_file_path: Path
+    append_distributions_to_path: bool
 
     def __init__(
         self,
         plugin_package_name: str,
         runtime_requires: List[str],
         changelog_file_path: Path,
+        append_distributions_to_path: bool,
     ) -> None:
         self.plugin_package_name = plugin_package_name
         self.plugin_package_path = Path(
@@ -47,6 +49,7 @@ class DevToolsConfig:
             distribution(Requirement(spec).name) for spec in runtime_requires
         ]
         self.changelog_file_path = changelog_file_path
+        self.append_distributions_to_path = append_distributions_to_path
 
     @staticmethod
     def from_pyproject_config(pyproject_file_path: Path) -> "DevToolsConfig":
@@ -56,4 +59,7 @@ class DevToolsConfig:
             runtime_requires=pyproject_config.runtime_requires,
             # TODO: allow setting path in pyproject file?
             changelog_file_path=pyproject_file_path.parent / "CHANGELOG.md",
+            append_distributions_to_path=(
+                pyproject_config.use_dangerous_vendor_sys_path_append
+            ),
         )
