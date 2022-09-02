@@ -29,3 +29,4 @@ configs
 dest
 metavar
 util
+pyd
