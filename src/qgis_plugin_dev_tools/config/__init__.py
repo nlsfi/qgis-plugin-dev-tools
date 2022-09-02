@@ -41,6 +41,7 @@ class DevToolsConfig:
         runtime_requires: List[str],
         changelog_file_path: Path,
         append_distributions_to_path: bool,
+        auto_add_recursive_runtime_dependencies: bool,
     ) -> None:
         self.plugin_package_name = plugin_package_name
         self.plugin_package_path = Path(
@@ -53,7 +54,7 @@ class DevToolsConfig:
         self.changelog_file_path = changelog_file_path
         self.append_distributions_to_path = append_distributions_to_path
 
-        if append_distributions_to_path:
+        if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
             self.runtime_distributions = list(
                 ChainMap(
@@ -75,5 +76,8 @@ class DevToolsConfig:
             changelog_file_path=pyproject_file_path.parent / "CHANGELOG.md",
             append_distributions_to_path=(
                 pyproject_config.use_dangerous_vendor_sys_path_append
+            ),
+            auto_add_recursive_runtime_dependencies=(
+                pyproject_config.auto_add_recursive_runtime_dependencies
             ),
         )

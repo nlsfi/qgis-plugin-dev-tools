@@ -31,6 +31,17 @@ runtime_requires = [
 ]
 ```
 
+If the plugin runtime dependencies have many dependencies themselves, it is possible to include those recursively with `auto_add_recursive_runtime_dependencies`. Alternatively, all the requirements can be listed in `runtime_requires`.
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+runtime_requires = [
+    "some_pypi_package"
+]
+auto_add_recursive_runtime_dependencies = true
+```
+
 If the plugin runtime dependencies do not work with the aforementioned configuration, the dependencies can be added to the Python Path with `use_dangerous_vendor_sys_path_append` flag. This method might be **unsafe** if there are conflicts between dependency versions of different plugins.
 
 ```toml

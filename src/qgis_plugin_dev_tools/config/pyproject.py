@@ -38,6 +38,7 @@ class PyprojectConfig:
     plugin_package_name: str
     runtime_requires: List[str] = field(default_factory=list)
     use_dangerous_vendor_sys_path_append: bool = False
+    auto_add_recursive_runtime_dependencies: bool = False
 
 
 def read_pyproject_config(pyproject_file_path: Path) -> PyprojectConfig:
