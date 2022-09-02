@@ -73,12 +73,19 @@ def copy_runtime_requirements(
 
     runtime_package_names = []
     # copy dist infos (licenses etc.) and all provided top level packages
-    for dist in dev_tools_config.runtime_distributions:
+    for dist in (
+        dev_tools_config.runtime_distributions
+        + dev_tools_config.extra_runtime_distributions
+    ):
         dist_info_path = Path(dist._path)  # type: ignore
-        if Path(sys.base_prefix) in dist_info_path.parent.parents:
+        if (
+            Path(sys.base_prefix) in dist_info_path.parent.parents
+            and dist in dev_tools_config.extra_runtime_distributions
+        ):
             # If QGIS Python includes the dependency, it does not have to be bundled
             LOGGER.debug(
-                "skipping runtime requirement %s because it is included in QGIS",
+                "skipping recursively found runtime requirement %s "
+                "because it is included in QGIS",
                 dist.metadata["Name"],
             )
             continue
