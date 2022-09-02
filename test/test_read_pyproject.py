@@ -64,6 +64,7 @@ def test_requires_allowed_empty(create_pyproject_toml_with_contents):
     result = read_pyproject_config(test_file)
     assert result.runtime_requires == []
     assert not result.use_dangerous_vendor_sys_path_append
+    assert not result.auto_add_recursive_runtime_dependencies
 
 
 def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
@@ -73,6 +74,7 @@ def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
             'plugin_package_name = "testing"',
             'runtime_requires = ["one", "another"]',
             "use_dangerous_vendor_sys_path_append = true",
+            "auto_add_recursive_runtime_dependencies = true",
         ]
     )
 
@@ -81,3 +83,4 @@ def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
     assert result.plugin_package_name == "testing"
     assert result.runtime_requires == ["one", "another"]
     assert result.use_dangerous_vendor_sys_path_append
+    assert result.auto_add_recursive_runtime_dependencies

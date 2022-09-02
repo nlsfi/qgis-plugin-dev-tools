@@ -68,6 +68,21 @@ def dev_tools_config(plugin_dir: Path):
         runtime_requires=["pytest"],
         changelog_file_path=plugin_dir / "CHANGELOG.md",
         append_distributions_to_path=True,
+        auto_add_recursive_runtime_dependencies=True,
+    )
+
+
+@pytest.fixture()
+def dev_tools_config_minimal(plugin_dir: Path):
+    # No python path append and not recursive deps
+    from qgis_plugin_dev_tools.config import DevToolsConfig
+
+    return DevToolsConfig(
+        plugin_package_name="Plugin",
+        runtime_requires=["pytest"],
+        changelog_file_path=plugin_dir / "CHANGELOG.md",
+        append_distributions_to_path=False,
+        auto_add_recursive_runtime_dependencies=False,
     )
 
 
@@ -116,6 +131,33 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", plugin_dir: Path, tmp_path
         "typing_extensions-4.2.0.dist-info",
         "zipp-3.8.0.dist-info",
         "zipp.py",
+    }
+
+
+def test_make_zip_with_minimal_config(
+    dev_tools_config_minimal: "DevToolsConfig", plugin_dir: Path, tmp_path: Path
+):
+    target_path = tmp_path / "dist"
+    expected_zip = target_path / "Plugin-0.1.0.zip"
+
+    make_plugin_zip(dev_tools_config_minimal, target_path)
+
+    assert target_path.exists()
+    assert expected_zip.exists()
+
+    plugin_init_file_contents = _get_file_from_zip(expected_zip, "Plugin/__init__.py")
+    vendor_init_file_contents = _get_file_from_zip(
+        expected_zip, "Plugin/_vendor/__init__.py"
+    )
+    vendor_files = _get_file_names(expected_zip, "Plugin/_vendor/")
+
+    assert "import Plugin._vendor" not in plugin_init_file_contents
+    assert vendor_init_file_contents == ""
+    assert vendor_files == {
+        "__init__.py",
+        "_pytest",
+        "pytest",
+        "pytest-6.2.5.dist-info",
     }
 
 
