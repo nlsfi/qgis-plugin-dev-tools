@@ -17,10 +17,27 @@
 #  You should have received a copy of the GNU General Public License
 #  along with qgis-plugin-dev-tools. If not, see <https://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import Dict, List
 
-from importlib_metadata import Distribution
+from importlib_metadata import Distribution, distribution
+from packaging.requirements import Requirement
 
 
-def get_distribution_top_level_package_names(distribution: Distribution) -> List[str]:
-    return (distribution.read_text("top_level.txt") or "").split()
+def get_distribution_top_level_package_names(dist: Distribution) -> List[str]:
+    return (dist.read_text("top_level.txt") or "").split()
+
+
+def get_distribution_requirements(dist: Distribution) -> Dict[str, Distribution]:
+    requirements = [
+        Requirement(requirement.split(" ")[0])
+        for requirement in dist.requires or []
+        if "extra ==" not in requirement
+    ]
+    distributions = {
+        requirement.name: distribution(requirement.name) for requirement in requirements
+    }
+    sub_requirements = {}
+    for requirement in distributions.values():
+        sub_requirements.update(get_distribution_requirements(requirement))
+    distributions.update(sub_requirements)
+    return distributions
