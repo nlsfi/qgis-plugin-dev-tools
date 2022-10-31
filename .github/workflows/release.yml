@@ -5,7 +5,7 @@ on:
     types: released
 
 jobs:
-  publish-pypi:
+  pypi:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,3 +20,7 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+      - uses: svenstaro/upload-release-action@v2.3.0
+        with:
+          file: dist/*
+          file_glob: true
