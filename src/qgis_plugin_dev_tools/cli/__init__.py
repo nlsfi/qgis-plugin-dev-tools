@@ -74,7 +74,7 @@ def start(dotenv_file_paths: List[Path]) -> None:
     )
 
 
-def build(plugin_version: Optional[str]) -> None:
+def build(override_plugin_version: Optional[str]) -> None:
     # TODO: allow choosing pyproject file from cli?
     dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
     LOGGER.info("building plugin package %s", dev_tools_config.plugin_package_name)
@@ -86,7 +86,7 @@ def build(plugin_version: Optional[str]) -> None:
     make_plugin_zip(
         dev_tools_config,
         target_directory_path=Path("dist"),
-        plugin_version=plugin_version,
+        override_plugin_version=override_plugin_version,
     )
 
 
@@ -129,8 +129,9 @@ build_parser.add_argument(
     metavar="<version>",
     dest="plugin_version",
     type=str,
-    default="",
-    help="version of the plugin (leave empty to get the version from the CHANGELOG.md)",
+    default=None,
+    help="override version number for the build,"
+    " (by default infer build version from source files)",
 )
 
 
@@ -148,8 +149,8 @@ def run() -> None:
         start(dotenv_file_paths)
 
     elif result.get("subcommand") in ["build", "b"]:
-        plugin_version = str(result.get("plugin_version"))
-        build(plugin_version)
+        override_plugin_version = result.get("plugin_version", None)
+        build(override_plugin_version)
 
     else:
         parser.print_usage()

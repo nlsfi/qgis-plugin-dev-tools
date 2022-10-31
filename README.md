@@ -53,12 +53,19 @@ runtime_requires = [
 use_dangerous_vendor_sys_path_append = true
 ```
 
+By default build version number is read from changelog top-most second level heading having format `## version anything`. This behaviour is configurable with `version_number_source` to use plugin package distribution metadata. Optionally, the version number can also be provided as an argument for the build script using `qpdt b --version 0.1.0-rc2`.
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+version_number_source = "distribution"  # or "changelog" (default if missing)
+```
+
 ## Plugin packaging
 
 Run `qgis-plugin-dev-tools build` (short `qpdt b`) to package the plugin and any runtime dependencies to a standard QGIS plugin zip file, that can be installed and published.
 
-By default config is read from `pyproject.toml`, changelog notes from `CHANGELOG.md`, version from latest changelog item title, and package is created in a `dist` directory in the current working directory. Changelog contents and version number are inserted to the `metadata.txt` file, so the version and changelog sections do not need manual updates. Optionally the version number can also be provided as an argument: `qpdt b --version 0.1.0-rc2`.
-
+By default config is read from `pyproject.toml`, changelog notes from `CHANGELOG.md`, version from changelog, and package is created in a `dist` directory in the current working directory. Changelog contents and version number are inserted to the `metadata.txt` file, so the version and changelog sections do not need manual updates.
 
 ## Plugin development mode
 

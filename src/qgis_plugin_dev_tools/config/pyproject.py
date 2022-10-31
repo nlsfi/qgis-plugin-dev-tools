@@ -20,7 +20,7 @@
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
+from typing import List, Literal, Union
 
 import tomli
 
@@ -39,6 +39,15 @@ class PyprojectConfig:
     runtime_requires: List[str] = field(default_factory=list)
     use_dangerous_vendor_sys_path_append: bool = False
     auto_add_recursive_runtime_dependencies: bool = False
+    version_number_source: Union[
+        Literal["changelog"], Literal["distribution"]
+    ] = "changelog"
+
+    def __post_init__(self) -> None:
+        if self.version_number_source not in ["changelog", "distribution"]:
+            raise ValueError(
+                f"invalid value for version_number_source={self.version_number_source}"
+            )
 
 
 def read_pyproject_config(pyproject_file_path: Path) -> PyprojectConfig:

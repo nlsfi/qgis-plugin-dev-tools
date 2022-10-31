@@ -141,7 +141,7 @@ def test_make_zip_with_minimal_config(
     expected_zip = target_path / "Plugin-test-version.zip"
 
     make_plugin_zip(
-        dev_tools_config_minimal, target_path, plugin_version="test-version"
+        dev_tools_config_minimal, target_path, override_plugin_version="test-version"
     )
 
     assert target_path.exists()

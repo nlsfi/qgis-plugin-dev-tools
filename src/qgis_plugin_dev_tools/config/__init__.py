@@ -18,6 +18,7 @@
 #  along with qgis-plugin-dev-tools. If not, see <https://www.gnu.org/licenses/>.
 
 from collections import ChainMap
+from enum import Enum, auto
 from pathlib import Path
 from typing import List
 
@@ -28,12 +29,25 @@ from qgis_plugin_dev_tools.config.pyproject import read_pyproject_config
 from qgis_plugin_dev_tools.utils.distributions import get_distribution_requirements
 
 
+class VersionNumberSource(Enum):
+    CHANGELOG = auto()
+    DISTRIBUTION = auto()
+
+    @staticmethod
+    def from_config_value(config_value: str) -> "VersionNumberSource":
+        try:
+            return VersionNumberSource[config_value.upper()]
+        except KeyError:
+            raise ValueError(f"{config_value=} is not a valid value")
+
+
 class DevToolsConfig:
     plugin_package_name: str
     plugin_package_path: Path
     runtime_distributions: List[Distribution]
     changelog_file_path: Path
     append_distributions_to_path: bool
+    version_number_source: VersionNumberSource
 
     def __init__(
         self,
@@ -42,6 +56,7 @@ class DevToolsConfig:
         changelog_file_path: Path,
         append_distributions_to_path: bool,
         auto_add_recursive_runtime_dependencies: bool,
+        version_number_source: VersionNumberSource = VersionNumberSource.CHANGELOG,
     ) -> None:
         self.plugin_package_name = plugin_package_name
         self.plugin_package_path = Path(
@@ -53,6 +68,7 @@ class DevToolsConfig:
         ]
         self.changelog_file_path = changelog_file_path
         self.append_distributions_to_path = append_distributions_to_path
+        self.version_number_source = version_number_source
         self.extra_runtime_distributions = []
 
         if auto_add_recursive_runtime_dependencies:
@@ -79,5 +95,8 @@ class DevToolsConfig:
             ),
             auto_add_recursive_runtime_dependencies=(
                 pyproject_config.auto_add_recursive_runtime_dependencies
+            ),
+            version_number_source=VersionNumberSource.from_config_value(
+                pyproject_config.version_number_source
             ),
         )
