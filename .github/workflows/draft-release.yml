@@ -1,0 +1,49 @@
+name: Create draft release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: Version number without "v" tag prefix (i.e. "1.0.0")
+
+jobs:
+  create-release-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      - run: |
+          python .github/workflows/draft-release/set-version.py ${{ github.event.inputs.version }}
+      - uses: EndBug/add-and-commit@v9.1.1
+        id: create-release-commit
+        with:
+          message: 'chore: release version ${{ github.event.inputs.version }}'
+      - run: |
+          python .github/workflows/draft-release/set-version-post0.py ${{ github.event.inputs.version }}
+      - uses: EndBug/add-and-commit@v9.1.1
+        with:
+          message: 'chore: new development version ${{ github.event.inputs.version }}.post0'
+    outputs:
+      release-commit-sha: ${{ steps.create-release-commit.outputs.commit_long_sha }}
+
+  draft-release:
+    needs: create-release-commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      - run: |
+          python .github/workflows/draft-release/extract-changes.py ${{ github.event.inputs.version }} > release-changes.txt
+      - uses: softprops/action-gh-release@v0.1.14
+        with:
+          name: ${{ github.event.inputs.version }}
+          tag_name: v${{ github.event.inputs.version }}
+          target_commitish: ${{ needs.create-release-commits.outputs.release-commit-sha }}
+          draft: true
+          generate_release_notes: true
+          body_path: release-changes.txt
