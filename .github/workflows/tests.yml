@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  tests:
+  pytest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,8 +19,6 @@ jobs:
       - run: |
           python -m venv .venv
       - run: |
-          source .venv/bin/activate
-          pip install -r requirements.txt --no-deps --only-binary=:all:
+          .venv/bin/pip3 install -r requirements.txt --no-deps --only-binary=:all:
       - run: |
-          source .venv/bin/activate
-          pytest
+          .venv/bin/pytest
