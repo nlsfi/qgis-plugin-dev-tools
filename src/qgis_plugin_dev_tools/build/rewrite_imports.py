@@ -115,6 +115,11 @@ def rewrite_imports_in_source_file(
         flags=re.M,
     )
 
+    # add a note describing changes made to files
+    change_note = "# original source code changed by rewriting import statements\n"
+    if change_note not in contents:
+        contents = change_note + contents
+
     source_file.write_text(contents, encoding="utf-8")
 
 

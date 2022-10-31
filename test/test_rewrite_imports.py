@@ -1,6 +1,13 @@
 from pathlib import Path
+from typing import List
 
 from qgis_plugin_dev_tools.build.rewrite_imports import rewrite_imports_in_source_file
+
+
+def _trim_first_line_comment(lines: List[str]) -> List[str]:
+    if lines[0].startswith("#"):
+        return lines[1:]
+    return lines
 
 
 def test_from_x_import_matching_name_not_rewritten(tmp_path: Path):
@@ -17,7 +24,7 @@ def test_from_x_import_matching_name_not_rewritten(tmp_path: Path):
     rewrite_imports_in_source_file(file, "xyz", "container.package")
 
     assert (
-        file.read_text().splitlines()
+        _trim_first_line_comment(file.read_text().splitlines())
         == """
     from something import xyz as xyz_alias
     from something import xyz
@@ -43,7 +50,7 @@ def test_plain_import_matching_name_rewritten(tmp_path: Path):
     rewrite_imports_in_source_file(file, "xyz", "container.package")
 
     assert (
-        file.read_text().splitlines()
+        _trim_first_line_comment(file.read_text().splitlines())
         == """
     import container.package.xyz as alias
     import container.package.xyz as xyz
@@ -74,7 +81,7 @@ def test_plain_import_with_mathing_prefix_not_replaced(tmp_path: Path):
     rewrite_imports_in_source_file(file, "xyz", "container.package")
 
     assert (
-        file.read_text().splitlines()
+        _trim_first_line_comment(file.read_text().splitlines())
         == """
     import xyz_a as alias
     import xyz_b
