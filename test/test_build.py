@@ -154,7 +154,7 @@ def test_make_zip_with_minimal_config(
     vendor_files = _get_file_names(expected_zip, "Plugin/_vendor/")
 
     assert "import Plugin._vendor" not in plugin_init_file_contents
-    assert vendor_init_file_contents == ""
+    assert "sys.path.append" not in vendor_init_file_contents
     assert vendor_files == {
         "__init__.py",
         "_pytest",
