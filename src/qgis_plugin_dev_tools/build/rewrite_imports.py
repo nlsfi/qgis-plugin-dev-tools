@@ -106,10 +106,10 @@ def rewrite_imports_in_source_file(
     )
 
     contents = re.sub(
-        r"(^|;)([\s\t]*)" + f"import {rewritten_package_name}",
+        r"(^|;)([\s\t]*)" + f"import {rewritten_package_name}" + r"([\s;])",
         (
             f"\\1\\2import {container_package_name}.{rewritten_package_name} "
-            f"as {rewritten_package_name}"
+            f"as {rewritten_package_name}\\3"
         ),
         contents,
         flags=re.M,
