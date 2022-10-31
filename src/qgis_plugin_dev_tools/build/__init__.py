@@ -28,28 +28,43 @@ from qgis_plugin_dev_tools.build.changelog_parser import (
     get_latest_changelog_sections,
     get_latest_changelog_version_identifier,
 )
+from qgis_plugin_dev_tools.build.distribution import (
+    get_package_version_from_distribution,
+)
 from qgis_plugin_dev_tools.build.metadata import update_metadata_file
 from qgis_plugin_dev_tools.build.packaging import (
     copy_plugin_code,
     copy_runtime_requirements,
 )
-from qgis_plugin_dev_tools.config import DevToolsConfig
+from qgis_plugin_dev_tools.config import DevToolsConfig, VersionNumberSource
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _infer_version_from_source_files(dev_tools_config: DevToolsConfig) -> str:
+    if dev_tools_config.version_number_source == VersionNumberSource.CHANGELOG:
+        return get_latest_changelog_version_identifier(
+            dev_tools_config.changelog_file_path
+        )
+    if dev_tools_config.version_number_source == VersionNumberSource.DISTRIBUTION:
+        return get_package_version_from_distribution(
+            dev_tools_config.plugin_package_name
+        )
+    raise ValueError(f"unsupported source {dev_tools_config.version_number_source}")
 
 
 def make_plugin_zip(
     dev_tools_config: DevToolsConfig,
     target_directory_path: Path,
-    plugin_version: Optional[str] = None,
+    override_plugin_version: Optional[str] = None,
 ) -> None:
     # TODO: make setuptools wrapper and use this code when creating the sdist/wheel?
 
     changelog_contents = get_latest_changelog_sections(
         dev_tools_config.changelog_file_path
     )
-    version = plugin_version or get_latest_changelog_version_identifier(
-        dev_tools_config.changelog_file_path
+    version = override_plugin_version or _infer_version_from_source_files(
+        dev_tools_config
     )
     zip_name = f"{dev_tools_config.plugin_package_name}-{version}"
 

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: Add an option to get version from distribution metadata
 - Fix: Rewrite imports correctly when dependency name is a prefix of the plugin package name
 
 ## [0.3.0] - 2022-09-02
