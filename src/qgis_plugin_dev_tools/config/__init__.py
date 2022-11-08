@@ -19,6 +19,7 @@
 
 from collections import ChainMap
 from enum import Enum, auto
+from importlib.util import find_spec
 from pathlib import Path
 from typing import List
 
@@ -58,10 +59,14 @@ class DevToolsConfig:
         auto_add_recursive_runtime_dependencies: bool,
         version_number_source: VersionNumberSource = VersionNumberSource.CHANGELOG,
     ) -> None:
+        plugin_package_spec = find_spec(plugin_package_name)
+        if plugin_package_spec is None or plugin_package_spec.origin is None:
+            raise ValueError(
+                f"could not find {plugin_package_name=} in the current environment"
+            )
+
+        self.plugin_package_path = Path(plugin_package_spec.origin).parent
         self.plugin_package_name = plugin_package_name
-        self.plugin_package_path = Path(
-            __import__(self.plugin_package_name).__file__  # type: ignore
-        ).parent
         # TODO: check versions are satisfied?
         self.runtime_distributions = [
             distribution(Requirement(spec).name) for spec in runtime_requires
