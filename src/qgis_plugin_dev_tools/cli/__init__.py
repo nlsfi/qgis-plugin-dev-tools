@@ -29,6 +29,7 @@ from qgis_plugin_dev_tools import LOGGER as ROOT_LOGGER
 from qgis_plugin_dev_tools.build import make_plugin_zip
 from qgis_plugin_dev_tools.config import DevToolsConfig
 from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
+from qgis_plugin_dev_tools.publish import publish_plugin_zip_file
 from qgis_plugin_dev_tools.start import launch_development_qgis
 from qgis_plugin_dev_tools.start.config import DevelopmentModeConfig
 from qgis_plugin_dev_tools.utils.distributions import (
@@ -90,6 +91,11 @@ def build(override_plugin_version: Optional[str]) -> None:
     )
 
 
+def publish(plugin_zip_file_path: Path) -> None:
+    LOGGER.info("publishing plugin zip file %s", plugin_zip_file_path)
+    publish_plugin_zip_file(plugin_zip_file_path)
+
+
 parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
 
 common_parser = argparse.ArgumentParser(add_help=False)
@@ -134,6 +140,18 @@ build_parser.add_argument(
     " (by default infer build version from source files)",
 )
 
+publish_parser = commands.add_parser(
+    "publish",
+    help="publish a built plugin zip file to QGIS plugin repository",
+    parents=[common_parser],
+)
+publish_parser.add_argument(
+    metavar="<file>",
+    dest="file",
+    type=Path,
+    help="zip file to publish",
+)
+
 
 def run() -> None:
     result = vars(parser.parse_args())
@@ -151,6 +169,10 @@ def run() -> None:
     elif result.get("subcommand") in ["build", "b"]:
         override_plugin_version = result.get("plugin_version", None)
         build(override_plugin_version)
+
+    elif result.get("subcommand") in ["publish"]:
+        plugin_zip_file_path = result["file"]
+        publish(plugin_zip_file_path)
 
     else:
         parser.print_usage()

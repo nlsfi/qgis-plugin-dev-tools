@@ -30,3 +30,4 @@ dest
 metavar
 util
 pyd
+base64
