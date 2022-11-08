@@ -31,3 +31,4 @@ metavar
 util
 pyd
 base64
+optionstr

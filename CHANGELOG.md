@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Feat: Add publish command to cli
 - Fix: Support build without actually importing the code
+- Fix: Preserve case for key names in metadata file
 
 ## [0.4.0] - 2022-11-01
 

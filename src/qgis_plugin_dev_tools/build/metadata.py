@@ -21,10 +21,15 @@ from configparser import ConfigParser
 from pathlib import Path
 
 
+class PreserveKeyCaseConfigParser(ConfigParser):
+    def optionxform(self, optionstr: str) -> str:
+        return optionstr
+
+
 def update_metadata_file(
     metadata_file_path: Path, version: str, changelog_contents: str
 ) -> None:
-    parser = ConfigParser()
+    parser = PreserveKeyCaseConfigParser()
     parser.read(metadata_file_path, encoding="utf-8")
     parser.set("general", "version", version)
     parser.set("general", "changelog", changelog_contents)
