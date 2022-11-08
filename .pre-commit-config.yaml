@@ -19,6 +19,8 @@ repos:
     rev: v0.931
     hooks:
       - id: mypy
+        additional_dependencies:
+          - types-requests==2.28.11.2
   - repo: https://github.com/PyCQA/flake8
     rev: 3.9.1
     hooks:

@@ -67,6 +67,12 @@ Run `qgis-plugin-dev-tools build` (short `qpdt b`) to package the plugin and any
 
 By default config is read from `pyproject.toml`, changelog notes from `CHANGELOG.md`, version from changelog, and package is created in a `dist` directory in the current working directory. Changelog contents and version number are inserted to the `metadata.txt` file, so the version and changelog sections do not need manual updates.
 
+## Plugin publishing
+
+Run `qgis-plugin-dev-tools publish <file>` (short `qpdt publish <file>`) to publish a previously built plugin zip file to QGIS plugin repository.
+
+By default username and password are read from `QPDT_PUBLISH_USERNAME` and `QPDT_PUBLISH_PASSWORD` environment variables.
+
 ## Plugin development mode
 
 Run `qgis-plugin-dev-tools start` (short `qpdt s`) to launch QGIS with the plugin installed and ready for development.
