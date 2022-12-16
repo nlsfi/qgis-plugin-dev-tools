@@ -38,3 +38,13 @@ repos:
           - flake8-pytest-style==1.5.0
           - flake8-pie==0.14.0
           - flake8-no-pep420==1.1.1
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.1.1
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.32.2
+    hooks:
+      - id: markdownlint
+        args: ["--fix"]
