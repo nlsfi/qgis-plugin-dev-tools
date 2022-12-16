@@ -18,6 +18,10 @@ Included `.code-workspace` has necessary options set (linting, formatting, tests
 
 Verify code style with `pre-commit run --all-files`, or use `pre-commit install` to generate an actual git hook.
 
+## Commit message style
+
+Commit messages should follow [Conventional Commits notation](https://www.conventionalcommits.org/en/v1.0.0/#summary). Use `pre-commit install --hook-type commit-msg` to generate a git hook for checking commit messages.
+
 ## Release steps
 
 When the branch is in a releasable state, trigger the `Create draft release` workflow from GitHub Actions. Pass the to-be-released version number as an input to the workflow.
