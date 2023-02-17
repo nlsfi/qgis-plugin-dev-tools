@@ -136,7 +136,10 @@ def copy_runtime_requirements(
     for package_name in runtime_package_names:
         LOGGER.debug("rewriting imports for %s", package_name)
 
-        for source_file in (build_directory_path / plugin_package_name).rglob("*.py"):
+        py_files = list((build_directory_path / plugin_package_name).rglob("*.py"))
+        ui_files = list((build_directory_path / plugin_package_name).rglob("*.ui"))
+
+        for source_file in py_files + ui_files:
             rewrite_imports_in_source_file(
                 source_file,
                 rewritten_package_name=package_name,

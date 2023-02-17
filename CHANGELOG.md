@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: Support dependencies having package references in .ui files
+
 ## [0.5.0] - 2022-11-09
 
 - Feat: Add publish command to cli
