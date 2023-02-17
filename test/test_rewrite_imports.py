@@ -115,6 +115,11 @@ def test_ui_file_custom_widget_imports_are_replaced(tmp_path: Path):
       <customwidget>
         <class>CustomTreeView</class>
         <extends>QTreeView</extends>
+        <header>xyz.something.xyz</header>"
+      </customwidget>
+      <customwidget>
+        <class>CustomTreeView</class>
+        <extends>QTreeView</extends>
         <header>xyz_something</header>"
       </customwidget>
     </ui>
@@ -133,5 +138,7 @@ def test_ui_file_custom_widget_imports_are_replaced(tmp_path: Path):
             assert header_section.text == "container.package.xyz"
         elif index == 1:
             assert header_section.text == "container.package.xyz.ui.treeview"
+        elif index == 2:
+            assert header_section.text == "container.package.xyz.something.xyz"
         else:
             assert header_section.text == "xyz_something"
