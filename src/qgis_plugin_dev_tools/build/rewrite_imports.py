@@ -125,16 +125,12 @@ def rewrite_imports_in_source_file(
             if header_section is None or header_section.text is None:
                 continue
 
-            if header_section.text == rewritten_package_name:
-                header_section.text = header_section.text.replace(
-                    rewritten_package_name,
-                    f"{container_package_name}.{rewritten_package_name}",
-                )
-            elif header_section.text.startswith(rewritten_package_name + "."):
-                header_section.text = header_section.text.replace(
-                    rewritten_package_name,
-                    f"{container_package_name}.{rewritten_package_name}",
-                )
+            if (
+                header_section.text == rewritten_package_name
+                or header_section.text.startswith(rewritten_package_name + ".")
+            ):
+                header_section.text = f"{container_package_name}.{header_section.text}"
+
         contents = ElementTree.tostring(  # noqa: SC200
             ui_tree, encoding="UTF-8", method="xml", xml_declaration=True
         ).decode("utf-8")
