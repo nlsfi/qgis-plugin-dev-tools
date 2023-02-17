@@ -3,6 +3,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict
+from xml.etree import ElementTree  # noqa: SC200
 
 
 @dataclass
@@ -115,10 +116,33 @@ def rewrite_imports_in_source_file(
         flags=re.M,
     )
 
-    # add a note describing changes made to files
-    change_note = "# original source code changed by rewriting import statements\n"
-    if change_note not in contents:
-        contents = change_note + contents
+    # special case for custom widgets in .ui files
+    if source_file.suffix == ".ui":
+        ui_tree = ElementTree.fromstring(contents)  # noqa: SC200
+        for widget_section in ui_tree.iter("customwidget"):
+            header_section = widget_section.find("header")
+
+            if header_section is None or header_section.text is None:
+                continue
+
+            if header_section.text == rewritten_package_name:
+                header_section.text = header_section.text.replace(
+                    rewritten_package_name,
+                    f"{container_package_name}.{rewritten_package_name}",
+                )
+            elif header_section.text.startswith(rewritten_package_name + "."):
+                header_section.text = header_section.text.replace(
+                    rewritten_package_name,
+                    f"{container_package_name}.{rewritten_package_name}",
+                )
+        contents = ElementTree.tostring(  # noqa: SC200
+            ui_tree, encoding="UTF-8", method="xml", xml_declaration=True
+        ).decode("utf-8")
+    else:
+        # add a note to .py files describing changes made to files
+        change_note = "# original source code changed by rewriting import statements\n"
+        if change_note not in contents:
+            contents = change_note + contents
 
     source_file.write_text(contents, encoding="utf-8")
 

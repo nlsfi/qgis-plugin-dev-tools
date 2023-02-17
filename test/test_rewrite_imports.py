@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import List
+from xml.etree import ElementTree
 
 from qgis_plugin_dev_tools.build.rewrite_imports import rewrite_imports_in_source_file
 
@@ -92,3 +93,45 @@ def test_plain_import_with_mathing_prefix_not_replaced(tmp_path: Path):
     \timport xyz_g
     """.splitlines()
     )
+
+
+def test_ui_file_custom_widget_imports_are_replaced(tmp_path: Path):
+
+    file = tmp_path / "mock.ui"
+
+    file.write_text(
+        """<?xml version="1.0" encoding="UTF-8"?>
+    <ui version="4.0">
+      <customwidget>
+        <class>CustomTreeView</class>
+        <extends>QTreeView</extends>
+        <header>xyz</header>"
+      </customwidget>
+      <customwidget>
+        <class>CustomTreeView</class>
+        <extends>QTreeView</extends>
+        <header>xyz.ui.treeview</header>"
+      </customwidget>
+      <customwidget>
+        <class>CustomTreeView</class>
+        <extends>QTreeView</extends>
+        <header>xyz_something</header>"
+      </customwidget>
+    </ui>
+    """
+    )
+
+    rewrite_imports_in_source_file(file, "xyz", "container.package")
+
+    # validate xml by reading it
+    ui_tree = ElementTree.fromstring(file.read_text())
+    for index, widget_section in enumerate(ui_tree.iter("customwidget")):
+        header_section = widget_section.find("header")
+        assert header_section is not None
+
+        if index == 0:
+            assert header_section.text == "container.package.xyz"
+        elif index == 1:
+            assert header_section.text == "container.package.xyz.ui.treeview"
+        else:
+            assert header_section.text == "xyz_something"
