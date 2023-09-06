@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- update author email
+
 ## [0.6.0] - 2023-02-17
 
 - Feat: Support dependencies having package references in .ui files
