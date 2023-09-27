@@ -78,14 +78,19 @@ class DevToolsConfig:
 
         if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
-            self.extra_runtime_distributions = list(
-                ChainMap(
+            distributions_versions = {
+                dist.name: dist.version for dist in self.runtime_distributions
+            }
+            self.extra_runtime_distributions = [
+                dist
+                for dist in ChainMap(
                     *(
                         get_distribution_requirements(dist)
                         for dist in self.runtime_distributions
                     )
                 ).values()
-            )
+                if distributions_versions.get(dist.name) != dist.version
+            ]
 
     @staticmethod
     def from_pyproject_config(pyproject_file_path: Path) -> "DevToolsConfig":
