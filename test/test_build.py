@@ -142,8 +142,9 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", plugin_dir: Path, tmp_path
         "toml",
         "toml-0.10.2.dist-info",
         "typing_extensions-4.2.0.dist-info",
+        "typing_extensions.py",  # no top-level.txt in .dist-info, parsed from record
         "zipp-3.8.0.dist-info",
-        "zipp.py",
+        "zipp.py",  # top-level.txt in .dist-info, includes zipp
     }
 
 
@@ -198,8 +199,9 @@ def test_make_zip_with_duplicate_dependencies(
         "toml",
         "toml-0.10.2.dist-info",
         "typing_extensions-4.2.0.dist-info",
+        "typing_extensions.py",  # no top-level.txt in .dist-info, parsed from record
         "zipp-3.8.0.dist-info",
-        "zipp.py",
+        "zipp.py",  # top-level.txt in .dist-info, includes zipp
     }
 
 
