@@ -21,7 +21,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from importlib_metadata import entry_points
 
@@ -37,7 +37,7 @@ from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level
 LOGGER = logging.getLogger(__name__)
 
 
-def start(dotenv_file_paths: List[Path]) -> None:
+def start(dotenv_file_paths: list[Path]) -> None:
     # TODO: allow choosing pyproject file from cli?
     dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
     # TODO: allow setting debugger flag from cli?

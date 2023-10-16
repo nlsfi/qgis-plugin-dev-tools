@@ -20,7 +20,7 @@
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Literal, Union
+from typing import Literal, Union
 
 import tomli
 
@@ -36,7 +36,7 @@ class PyprojectConfig:
     DEV_TOOLS_SECTION_LOCATOR = "qgis_plugin_dev_tools"
 
     plugin_package_name: str
-    runtime_requires: List[str] = field(default_factory=list)
+    runtime_requires: list[str] = field(default_factory=list)
     use_dangerous_vendor_sys_path_append: bool = False
     auto_add_recursive_runtime_dependencies: bool = False
     version_number_source: Union[
@@ -60,4 +60,4 @@ def read_pyproject_config(pyproject_file_path: Path) -> PyprojectConfig:
             ]
             return PyprojectConfig(**dev_tools_configuration)
         except (KeyError, TypeError) as e:
-            raise ValueError(f"dev tools config invalid in pyproject.toml: {e}")
+            raise ValueError(f"dev tools config invalid in pyproject.toml: {e}") from e

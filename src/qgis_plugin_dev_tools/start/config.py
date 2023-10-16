@@ -19,17 +19,17 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 
 @dataclass
 class DevelopmentModeConfig:
     qgis_executable_path: Path
     profile_name: Optional[str]
-    runtime_environment: Dict[str, str]
-    runtime_library_paths: List[Path]
+    runtime_environment: dict[str, str]
+    runtime_library_paths: list[Path]
     plugin_package_path: Path
     plugin_package_name: str
-    plugin_dependency_package_names: List[str]
+    plugin_dependency_package_names: list[str]
     debugger_library: Optional[str]
-    extra_plugin_package_names: List[str]
+    extra_plugin_package_names: list[str]

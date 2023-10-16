@@ -3,14 +3,10 @@ import sys
 import textwrap
 import zipfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Set
 
 import pytest
-
 from qgis_plugin_dev_tools.build import make_plugin_zip
-
-if TYPE_CHECKING:
-    from qgis_plugin_dev_tools.config import DevToolsConfig
+from qgis_plugin_dev_tools.config import DevToolsConfig
 
 
 @pytest.fixture()
@@ -60,7 +56,7 @@ def plugin_dir(tmp_path: Path) -> Path:
 
 
 @pytest.fixture()
-def dev_tools_config(plugin_dir: Path):
+def dev_tools_config(plugin_dir: Path) -> DevToolsConfig:
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
     return DevToolsConfig(
@@ -73,7 +69,7 @@ def dev_tools_config(plugin_dir: Path):
 
 
 @pytest.fixture()
-def dev_tools_config_with_duplicate_dependencies(plugin_dir: Path):
+def dev_tools_config_with_duplicate_dependencies(plugin_dir: Path) -> DevToolsConfig:
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
     return DevToolsConfig(
@@ -86,7 +82,7 @@ def dev_tools_config_with_duplicate_dependencies(plugin_dir: Path):
 
 
 @pytest.fixture()
-def dev_tools_config_minimal(plugin_dir: Path):
+def dev_tools_config_minimal(plugin_dir: Path) -> DevToolsConfig:
     # No python path append and not recursive deps
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
@@ -99,7 +95,7 @@ def dev_tools_config_minimal(plugin_dir: Path):
     )
 
 
-def test_make_zip(dev_tools_config: "DevToolsConfig", plugin_dir: Path, tmp_path: Path):
+def test_make_zip(dev_tools_config: "DevToolsConfig", tmp_path: Path):
     target_path = tmp_path / "dist"
     expected_zip = target_path / "Plugin-0.1.0.zip"
 
@@ -131,13 +127,11 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", plugin_dir: Path, tmp_path
         "iniconfig",
         "iniconfig-1.1.1.dist-info",
         "packaging",
-        "packaging-21.3.dist-info",
+        "packaging-23.2.dist-info",
         "pluggy",
         "pluggy-1.0.0.dist-info",
         "py",
         "py-1.11.0.dist-info",
-        "pyparsing",
-        "pyparsing-3.0.8.dist-info",
         "pytest",
         "pytest-6.2.5.dist-info",
         "toml",
@@ -151,7 +145,6 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", plugin_dir: Path, tmp_path
 
 def test_make_zip_with_duplicate_dependencies(
     dev_tools_config_with_duplicate_dependencies: "DevToolsConfig",
-    plugin_dir: Path,
     tmp_path: Path,
 ):
     target_path = tmp_path / "dist"
@@ -187,13 +180,11 @@ def test_make_zip_with_duplicate_dependencies(
         "iniconfig",
         "iniconfig-1.1.1.dist-info",
         "packaging",
-        "packaging-21.3.dist-info",
+        "packaging-23.2.dist-info",
         "pluggy",
         "pluggy-1.0.0.dist-info",
         "py",
         "py-1.11.0.dist-info",
-        "pyparsing",
-        "pyparsing-3.0.8.dist-info",
         "pytest",
         "pytest-6.2.5.dist-info",
         "pytest_cov",
@@ -208,7 +199,7 @@ def test_make_zip_with_duplicate_dependencies(
 
 
 def test_make_zip_with_minimal_config(
-    dev_tools_config_minimal: "DevToolsConfig", plugin_dir: Path, tmp_path: Path
+    dev_tools_config_minimal: "DevToolsConfig", tmp_path: Path
 ):
     target_path = tmp_path / "dist"
     expected_zip = target_path / "Plugin-test-version.zip"
@@ -236,7 +227,7 @@ def test_make_zip_with_minimal_config(
     }
 
 
-def _get_file_names(zip_file: Path, prefix: str) -> Set[str]:
+def _get_file_names(zip_file: Path, prefix: str) -> set[str]:
     with zipfile.ZipFile(zip_file) as z:
         namelist = z.namelist()
         return {

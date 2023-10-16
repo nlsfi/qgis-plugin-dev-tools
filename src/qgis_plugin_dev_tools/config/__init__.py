@@ -21,7 +21,6 @@ from collections import ChainMap
 from enum import Enum, auto
 from importlib.util import find_spec
 from pathlib import Path
-from typing import List
 
 from importlib_metadata import Distribution, distribution
 from packaging.requirements import Requirement
@@ -39,21 +38,21 @@ class VersionNumberSource(Enum):
         try:
             return VersionNumberSource[config_value.upper()]
         except KeyError:
-            raise ValueError(f"{config_value=} is not a valid value")
+            raise ValueError(f"{config_value=} is not a valid value") from None
 
 
 class DevToolsConfig:
     plugin_package_name: str
     plugin_package_path: Path
-    runtime_distributions: List[Distribution]
+    runtime_distributions: list[Distribution]
     changelog_file_path: Path
     append_distributions_to_path: bool
     version_number_source: VersionNumberSource
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         plugin_package_name: str,
-        runtime_requires: List[str],
+        runtime_requires: list[str],
         changelog_file_path: Path,
         append_distributions_to_path: bool,
         auto_add_recursive_runtime_dependencies: bool,

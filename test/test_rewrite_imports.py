@@ -1,18 +1,16 @@
 from pathlib import Path
-from typing import List
 from xml.etree import ElementTree
 
 from qgis_plugin_dev_tools.build.rewrite_imports import rewrite_imports_in_source_file
 
 
-def _trim_first_line_comment(lines: List[str]) -> List[str]:
+def _trim_first_line_comment(lines: list[str]) -> list[str]:
     if lines[0].startswith("#"):
         return lines[1:]
     return lines
 
 
 def test_from_x_import_matching_name_not_rewritten(tmp_path: Path):
-
     file = tmp_path / "mock.py"
 
     file.write_text(
@@ -96,7 +94,6 @@ def test_plain_import_with_mathing_prefix_not_replaced(tmp_path: Path):
 
 
 def test_ui_file_custom_widget_imports_are_replaced(tmp_path: Path):
-
     file = tmp_path / "mock.ui"
 
     file.write_text(
