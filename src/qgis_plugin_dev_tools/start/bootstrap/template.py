@@ -26,14 +26,14 @@ import sys
 from dataclasses import asdict, dataclass
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 # defer qgis.* imports until necessary to avoid loading those
 # for the interpreter that launches the bootstrapping, since it
 # will import the config class from this module
 
 
-def _unload_package_modules(package_names: List[str]) -> None:
+def _unload_package_modules(package_names: list[str]) -> None:
     to_clean_names = [
         module_name
         for module_name in sys.modules
@@ -43,19 +43,17 @@ def _unload_package_modules(package_names: List[str]) -> None:
         )
     ]
     for module_name in to_clean_names:
-        try:  # noqa SIM105
+        try:
             if hasattr(sys.modules[module_name], "qCleanupResources"):
                 sys.modules[module_name].qCleanupResources()
-        except Exception:  # noqa PIE786
+        except Exception:
             pass
-        try:  # noqa SIM105
+        with contextlib.suppress(Exception):
             del sys.modules[module_name]
-        except Exception:  # noqa PIE786
-            pass
 
 
 def _monkeypatch_plugin_module_unload_to_unload_dependencies(
-    plugin_package_name: str, plugin_dependency_package_names: List[str]
+    plugin_package_name: str, plugin_dependency_package_names: list[str]
 ) -> None:
     from qgis.core import Qgis, QgsMessageLog
 
@@ -67,7 +65,7 @@ def _monkeypatch_plugin_module_unload_to_unload_dependencies(
             level=Qgis.Info,
         )
 
-        from qgis.utils import (  # noqa N813 (qgis naming)
+        from qgis.utils import (  # (qgis naming)
             _unloadPluginModules as _original_unload,
         )
 
@@ -75,7 +73,7 @@ def _monkeypatch_plugin_module_unload_to_unload_dependencies(
             _unload_package_modules, plugin_dependency_package_names
         )
 
-        def _custom_unload(packageName: str) -> bool:  # noqa N803 (qgis naming)
+        def _custom_unload(packageName: str) -> bool:  # noqa: N803 (qgis naming)
             original_return = _original_unload(packageName)
             if packageName == plugin_package_name:
                 unload_plugin_dependency_modules()
@@ -87,14 +85,14 @@ def _monkeypatch_plugin_module_unload_to_unload_dependencies(
 
 
 def _monkeypatch_plugin_reload_to_reload_extra_plugins(
-    main_plugin_package_name: str, extra_plugin_package_names: List[str]
+    main_plugin_package_name: str, extra_plugin_package_names: list[str]
 ) -> None:
     from qgis.core import Qgis, QgsMessageLog
-    from qgis.utils import loadPlugin as _original_load  # noqa N813 (qgis naming)
+    from qgis.utils import loadPlugin as _original_load  # noqa: N813 (qgis naming)
     from qgis.utils import startPlugin
-    from qgis.utils import unloadPlugin as _original_unload  # noqa N813 (qgis naming)
+    from qgis.utils import unloadPlugin as _original_unload  # noqa: N813 (qgis naming)
 
-    def _custom_unload(packageName: str) -> bool:  # noqa N803 (qgis naming)
+    def _custom_unload(packageName: str) -> bool:  # noqa: N803 (qgis naming)
         original_return = _original_unload(packageName)
 
         if packageName == main_plugin_package_name:
@@ -104,7 +102,7 @@ def _monkeypatch_plugin_reload_to_reload_extra_plugins(
 
         return original_return
 
-    def _custom_load(packageName: str) -> bool:  # noqa N803 (qgis naming)
+    def _custom_load(packageName: str) -> bool:  # noqa: N803 (qgis naming)
         if packageName == main_plugin_package_name:
             for plugin_package_name in extra_plugin_package_names:
                 with contextlib.suppress(Exception):
@@ -124,7 +122,7 @@ def _monkeypatch_plugin_reload_to_reload_extra_plugins(
     qgis_utils_module.loadPlugin = _custom_load
 
 
-def _setup_runtime_library_paths(runtime_library_paths: List[Path]) -> None:
+def _setup_runtime_library_paths(runtime_library_paths: list[Path]) -> None:
     from qgis.core import Qgis, QgsMessageLog
 
     QgsMessageLog.logMessage(
@@ -133,7 +131,7 @@ def _setup_runtime_library_paths(runtime_library_paths: List[Path]) -> None:
     sys.path.extend(str(p) for p in runtime_library_paths)
 
 
-def _setup_runtime_environment(runtime_environment: Dict[str, str]) -> None:
+def _setup_runtime_environment(runtime_environment: dict[str, str]) -> None:
     from qgis.core import Qgis, QgsMessageLog
 
     QgsMessageLog.logMessage("setting dev env variables", "Bootstrap", level=Qgis.Info)
@@ -141,7 +139,7 @@ def _setup_runtime_environment(runtime_environment: Dict[str, str]) -> None:
 
 
 def _enable_extra_plugins(
-    main_plugin_package_name: str, extra_plugin_package_names: List[str]
+    main_plugin_package_name: str, extra_plugin_package_names: list[str]
 ) -> None:
     from qgis.PyQt.QtCore import QSettings
     from qgis.utils import plugin_paths, unloadPlugin
@@ -162,7 +160,7 @@ def _enable_extra_plugins(
 def _enable_plugin(
     plugin_package_name: str,
     plugin_package_path: Path,
-    plugin_dependency_package_names: List[str],
+    plugin_dependency_package_names: list[str],
 ) -> None:
     from pyplugin_installer.installer_data import plugins as installer_plugins
     from qgis.core import Qgis, QgsMessageLog
@@ -240,24 +238,24 @@ def _start_debugger(library_name: Optional[str], python_executable_path: Path) -
 
     try:
         if library_name == "debugpy":
-            import debugpy  # noqa SC200
+            import debugpy  # noqa: SC200
 
             # at least on windows qgis resets the env and sys.executable points
             # to the qgis executable, hold on to the original python to use here
-            debugpy.configure(python=str(python_executable_path))  # noqa SC200
-            debugpy.listen(("localhost", 5678))  # noqa SC200
+            debugpy.configure(python=str(python_executable_path))  # noqa: SC200
+            debugpy.listen(("localhost", 5678))  # noqa: SC200
 
         elif library_name == "pydevd":
-            import pydevd  # noqa SC200
+            import pydevd  # noqa: SC200
 
-            pydevd.settrace(  # noqa SC200
+            pydevd.settrace(  # noqa: SC200
                 "localhost", port=5678, stdoutToServer=True, stderrToServer=True
             )
 
         else:
             return
 
-    except Exception as e:  # noqa PIE786
+    except Exception as e:
         QgsMessageLog.logMessage(
             f"failed to start {library_name} debugger: {e}",
             "Bootstrap",
@@ -274,14 +272,14 @@ def _start_debugger(library_name: Optional[str], python_executable_path: Path) -
 @dataclass
 class BootstrapConfig:
     daemon_socket_port: int
-    runtime_library_paths: List[Path]
-    runtime_environment: Dict[str, str]
+    runtime_library_paths: list[Path]
+    runtime_environment: dict[str, str]
     plugin_package_path: Path
     plugin_package_name: str
-    plugin_dependency_package_names: List[str]
+    plugin_dependency_package_names: list[str]
     debugger_library: Optional[str]
     bootstrap_python_executable_path: Path
-    extra_plugin_package_names: List[str]
+    extra_plugin_package_names: list[str]
 
     def __str__(self) -> str:
         result = ""

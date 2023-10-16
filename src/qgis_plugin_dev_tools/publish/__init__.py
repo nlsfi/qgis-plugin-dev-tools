@@ -4,12 +4,14 @@ import logging
 import os
 from base64 import b64encode
 from pathlib import Path
-from typing import Dict, Tuple, cast
+from typing import cast
 from uuid import uuid4
 
 import requests
 
 LOGGER = logging.getLogger(__name__)
+
+HTTP_STATUS_CODE_OK = 200
 
 
 def publish_plugin_zip_file(plugin_zip_file_path: Path) -> None:
@@ -51,7 +53,7 @@ def publish_plugin_zip_file(plugin_zip_file_path: Path) -> None:
         response.text,
     )
 
-    if response.status_code != 200:
+    if response.status_code != HTTP_STATUS_CODE_OK:
         raise Exception(
             "QGIS plugin repository plugin upload "
             f"HTTP request failed with status {response.status_code}"
@@ -62,7 +64,7 @@ def publish_plugin_zip_file(plugin_zip_file_path: Path) -> None:
             f"request returned error response {response.json().get('error')}"
         )
 
-    plugin_id, version_id = cast(Dict[str, Tuple[int, int]], response.json()).get(
+    plugin_id, version_id = cast(dict[str, tuple[int, int]], response.json()).get(
         "result", (None, None)
     )
 

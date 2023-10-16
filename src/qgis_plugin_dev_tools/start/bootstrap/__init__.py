@@ -21,11 +21,11 @@ import dataclasses
 import logging
 import pickle
 import sys
+from collections.abc import Generator
 from contextlib import contextmanager
 from importlib import resources
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator
 
 from qgis_plugin_dev_tools.start.bootstrap.template import BootstrapConfig
 from qgis_plugin_dev_tools.start.config import DevelopmentModeConfig
@@ -44,10 +44,10 @@ def create_bootstrap_file(
             runtime_environment=development_mode_configuration.runtime_environment,
             plugin_package_path=development_mode_configuration.plugin_package_path,
             plugin_package_name=development_mode_configuration.plugin_package_name,
-            plugin_dependency_package_names=development_mode_configuration.plugin_dependency_package_names,  # noqa E501
+            plugin_dependency_package_names=development_mode_configuration.plugin_dependency_package_names,
             debugger_library=development_mode_configuration.debugger_library,
             bootstrap_python_executable_path=Path(sys.executable),
-            extra_plugin_package_names=development_mode_configuration.extra_plugin_package_names,  # noqa E501
+            extra_plugin_package_names=development_mode_configuration.extra_plugin_package_names,
         )
 
         LOGGER.debug("using bootstrap config:\n%s", bootstrap_config)

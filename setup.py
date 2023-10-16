@@ -1,3 +1,3 @@
-from setuptools import setup  # noqa INP001
+from setuptools import setup
 
 setup()

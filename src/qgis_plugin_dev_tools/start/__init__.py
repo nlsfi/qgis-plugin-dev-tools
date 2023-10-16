@@ -32,13 +32,11 @@ def launch_development_qgis(
 ) -> None:
     LOGGER.info("starting daemon server")
     with start_daemon_server() as (port, handle_single_request):
-
         LOGGER.info("creating a bootstrap file")
         with create_bootstrap_file(
             development_mode_config,
             port,
         ) as bootstrap_file_path:
-
             LOGGER.info("launching qgis")
             launch_qgis_with_bootstrap_script(
                 development_mode_config.qgis_executable_path,

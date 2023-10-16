@@ -1,5 +1,63 @@
-[tool.isort]
-profile = "black"
+[tool.ruff]
+ignore = [
+    "ANN101", # Missing type annotation for self in method
+    ]
+line-length = 88
+
+# List of all rules https://docs.astral.sh/ruff/rules/
+select = [
+    "ANN", # flake8-annotations
+    "B", # flake8-bugbear
+    "C", # flake8-comprehensions
+    "C90", # flake8, mccabe
+    "E", # flake8, pycodestyle
+    "F", # flake8, Pyflakes
+    "I", # isort
+    "INP", # flake8-no-pep420
+    "N", # pep8-naming
+    "PIE", # flake8-pie
+    "PGH", # pygrep-hooks
+    "PL", # pylint
+    "PT", # flake8-pytest-style
+    "RUF", # Ruff-specific rules
+    "SIM", # flake8-simplify
+    "T", # flake8-print
+    "ICN", # flake8-import-conventions
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "W", # flake8, pycodestyle
+    "UP", # pyupgrade
+    ]
+
+# Avoiding flagging (and removing) `SC200` from any `# noqa`
+# directives, despite Ruff's lack of support for `flake8-spellcheck`.
+external = ["SC200"]
+
+target-version = "py39"
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+"test*" = [
+    "INP001",
+    "ANN201", # Missing return type annotation for public function
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
+    "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
+    ]
+
+
+[tool.flake8]
+max-line-length = 88
+spellcheck-targets = "names"
+dictionaries = "en_US,python,technical"
+extend-ignore = [
+    "E203",  # whitespace before ':'
+    "E501",  # line length (checked by ruff now, possible mismatches)
+]
+per-file-ignores = [
+    "test/*:INP001,SC200",
+]
 
 [tool.mypy]
 follow_imports = "normal"

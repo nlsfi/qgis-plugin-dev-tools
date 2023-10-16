@@ -1,23 +1,24 @@
 from pathlib import Path
-from typing import List
+from typing import Callable
 
 import pytest
-
 from qgis_plugin_dev_tools.config.pyproject import read_pyproject_config
 
 
 @pytest.fixture()
-def create_pyproject_toml_with_contents(tmpdir):
+def create_pyproject_toml_with_contents(tmpdir: str) -> Callable[[list[str]], Path]:
     toml_file_path = Path(tmpdir) / "test.toml"
 
-    def write_contents_from_list(contents: List[str]):
+    def write_contents_from_list(contents: list[str]) -> Path:
         toml_file_path.write_text("\n".join(contents), encoding="utf-8")
         return toml_file_path
 
     return write_contents_from_list
 
 
-def test_section_missing_fails(create_pyproject_toml_with_contents):
+def test_section_missing_fails(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+):
     test_file = create_pyproject_toml_with_contents(
         [
             "[tool.not_the_expected_name]",
@@ -25,11 +26,13 @@ def test_section_missing_fails(create_pyproject_toml_with_contents):
         ]
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="config invalid"):
         read_pyproject_config(test_file)
 
 
-def test_package_name_missing_fails(create_pyproject_toml_with_contents):
+def test_package_name_missing_fails(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+):
     test_file = create_pyproject_toml_with_contents(
         [
             "[tool.qgis_plugin_dev_tools]",
@@ -37,11 +40,13 @@ def test_package_name_missing_fails(create_pyproject_toml_with_contents):
         ]
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not_the_package_name_key"):
         read_pyproject_config(test_file)
 
 
-def test_requires_allowed_missing(create_pyproject_toml_with_contents):
+def test_requires_allowed_missing(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+):
     test_file = create_pyproject_toml_with_contents(
         [
             "[tool.qgis_plugin_dev_tools]",
@@ -52,7 +57,9 @@ def test_requires_allowed_missing(create_pyproject_toml_with_contents):
     assert read_pyproject_config(test_file).runtime_requires == []
 
 
-def test_requires_allowed_empty(create_pyproject_toml_with_contents):
+def test_requires_allowed_empty(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+):
     test_file = create_pyproject_toml_with_contents(
         [
             "[tool.qgis_plugin_dev_tools]",
@@ -67,7 +74,9 @@ def test_requires_allowed_empty(create_pyproject_toml_with_contents):
     assert not result.auto_add_recursive_runtime_dependencies
 
 
-def test_section_read_to_dataclass(create_pyproject_toml_with_contents):
+def test_section_read_to_dataclass(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+):
     test_file = create_pyproject_toml_with_contents(
         [
             "[tool.qgis_plugin_dev_tools]",

@@ -8,37 +8,29 @@ repos:
       - id: check-yaml
       - id: check-json
       - id: check-added-large-files
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.292
     hooks:
-      - id: isort
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 23.7.0
     hooks:
       - id: black
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.931
+    rev: v1.4.1
     hooks:
       - id: mypy
         additional_dependencies:
-          - types-requests==2.28.11.2
+          - types-requests==2.25.12
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.1
+    rev: 6.0.0
     hooks:
       - id: flake8
         additional_dependencies:
-          - flake8-bugbear==21.4.3
-          - pep8-naming==0.11.1
-          - flake8-annotations==2.6.2
+          - flake8-pyproject==1.2.3
+          - flake8-spellcheck==0.28.0
           - flake8-qgis==1.0.0
-          - flake8-print==4.0.0
-          - flake8-tidy-imports==4.4.1
-          - flake8-comprehensions==3.6.1
-          - flake8-spellcheck==0.24.0
-          - flake8-simplify==0.14.1
-          - flake8-pytest-style==1.5.0
-          - flake8-pie==0.14.0
-          - flake8-no-pep420==1.1.1
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v2.1.1
     hooks:

@@ -19,14 +19,14 @@
 
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 from dotenv import dotenv_values
 
 LOGGER = logging.getLogger(__name__)
 
 
-class DotenvConfig:  # noqa SIM119
+class DotenvConfig:
     """
     Expected structure for the config keys in the .env.
     """
@@ -34,14 +34,14 @@ class DotenvConfig:  # noqa SIM119
     QGIS_EXECUTABLE_PATH: Path
     DEBUGGER_LIBRARY: Optional[str]
     DEVELOPMENT_PROFILE_NAME: Optional[str]
-    runtime_environment: Dict[str, str]
+    runtime_environment: dict[str, str]
 
     def __init__(
         self,
         *,
-        QGIS_EXECUTABLE_PATH: str,  # noqa N803
-        DEBUGGER_LIBRARY: Optional[str] = None,  # noqa N803
-        DEVELOPMENT_PROFILE_NAME: Optional[str] = None,  # noqa N803
+        QGIS_EXECUTABLE_PATH: str,  # noqa: N803
+        DEBUGGER_LIBRARY: Optional[str] = None,  # noqa: N803
+        DEVELOPMENT_PROFILE_NAME: Optional[str] = None,  # noqa: N803
         **other_vars: str,
     ) -> None:
         self.QGIS_EXECUTABLE_PATH = Path(QGIS_EXECUTABLE_PATH)
@@ -54,7 +54,7 @@ class DotenvConfig:  # noqa SIM119
         self.runtime_environment = other_vars
 
 
-def read_dotenv_configs(dotenv_file_paths: List[Path]) -> DotenvConfig:
+def read_dotenv_configs(dotenv_file_paths: list[Path]) -> DotenvConfig:
     config = {}
     for dotenv_file_path in dotenv_file_paths:
         LOGGER.debug("reading config from %s", dotenv_file_path.resolve())
@@ -62,4 +62,4 @@ def read_dotenv_configs(dotenv_file_paths: List[Path]) -> DotenvConfig:
     try:
         return DotenvConfig(**{k: v for k, v in config.items() if v})
     except (KeyError, TypeError) as e:
-        raise ValueError(f"dev tools config invalid in .env: {e}")
+        raise ValueError(f"dev tools config invalid in .env: {e}") from e

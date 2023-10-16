@@ -19,7 +19,7 @@ class SpecialImportRewriter(ast.NodeTransformer):
     _replaced_imported_names: Dict[str, str] = field(default_factory=dict, init=False)
 
     # collect the found imported names to replace the references also
-    def visit_Import(self, node: ast.Import) -> Any:  # noqa N802
+    def visit_Import(self, node: ast.Import) -> Any:  # noqa: N802
         for alias in node.names:
             if alias.name.startswith(f"{self.from_module}.") and alias.asname is None:
                 old_module_name = alias.name
@@ -33,7 +33,7 @@ class SpecialImportRewriter(ast.NodeTransformer):
         return node
 
     # check the attributes for an imported module name reference
-    def visit_Attribute(self, node: ast.Attribute) -> Any:  # noqa N802
+    def visit_Attribute(self, node: ast.Attribute) -> Any:  # noqa: N802
         attribute_name = ast.unparse(node)
         if attribute_name in self._replaced_imported_names:
             replaced_name = self._replaced_imported_names[attribute_name]
@@ -42,7 +42,7 @@ class SpecialImportRewriter(ast.NodeTransformer):
         return self.generic_visit(node)
 
     # this will only handle sys.modules['something'] replace
-    def visit_Subscript(self, node: ast.Subscript) -> Any:  # noqa N802
+    def visit_Subscript(self, node: ast.Subscript) -> Any:  # noqa: N802
         if (
             ast.unparse(node.value) == "sys.modules"
             and isinstance(node.slice, ast.Constant)
@@ -69,7 +69,6 @@ def rewrite_imports_in_source_file(
         f'sys.modules["{rewritten_package_name}.',
     ]
     if any(special in contents for special in specials):
-
         # hold on to the original for license comments
         # since comments are lost with ast parse+unparse
         orig_file = source_file.with_name(source_file.name + "_original")
