@@ -29,7 +29,28 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_distribution_top_level_package_names(dist: Distribution) -> List[str]:
-    return (dist.read_text("top_level.txt") or "").split()
+    if (
+        top_level_contents := cast(
+            Optional[str],
+            dist.read_text("top_level.txt"),
+        )
+    ) is None:
+        LOGGER.debug("%s has no top level packages", dist.name)
+        return []
+
+    return top_level_contents.split()
+
+
+def get_distribution_top_level_script_names(dist: Distribution) -> List[str]:
+    if (file_paths := dist.files) is None:
+        LOGGER.warning("%s file catalog missing", dist.name)
+        return []
+
+    return [
+        file_path.stem
+        for file_path in file_paths
+        if len(file_path.parts) == 1 and file_path.match("*.py")
+    ]
 
 
 def get_distribution_requirements(dist: Distribution) -> Dict[str, Distribution]:
