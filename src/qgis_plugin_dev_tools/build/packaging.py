@@ -82,10 +82,13 @@ def copy_runtime_requirements(
             Path(sys.base_prefix) in dist_info_path.parent.parents
             and dist in dev_tools_config.extra_runtime_distributions
         ):
-            # If QGIS Python includes the dependency, it does not have to be bundled
-            LOGGER.debug(
+            # If build enviroment system packages include a dependency
+            # resolved via recursive flag, assume it does not have
+            # to be bundled (possibly dangerous, if build is made on
+            # a different system package set than runtime)
+            LOGGER.warning(
                 "skipping recursively found runtime requirement %s "
-                "because it is included in QGIS",
+                "because it is included in system packages",
                 dist.metadata["Name"],
             )
             continue
