@@ -33,3 +33,4 @@ pyd
 base64
 optionstr
 ui
+vendored

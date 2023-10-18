@@ -28,10 +28,7 @@ from qgis_plugin_dev_tools.build.rewrite_imports import (
     insert_as_first_import,
 )
 from qgis_plugin_dev_tools.config import DevToolsConfig
-from qgis_plugin_dev_tools.utils.distributions import (
-    get_distribution_top_level_package_names,
-    get_distribution_top_level_script_names,
-)
+from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level_names
 
 IGNORED_FILES = shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyi")
 LOGGER = logging.getLogger(__name__)
@@ -62,164 +59,134 @@ def copy_runtime_requirements(
     dev_tools_config: DevToolsConfig,
     build_directory_path: Path,
 ) -> None:
+    if len(dev_tools_config.runtime_distributions) == 0:
+        return
+
     plugin_package_name = dev_tools_config.plugin_package_name
+    vendor_path = build_directory_path / plugin_package_name / "_vendor"
 
-    if len(dev_tools_config.runtime_distributions) > 0:
-        vendor_path = build_directory_path / plugin_package_name / "_vendor"
-        vendor_path.mkdir(parents=True)
-        vendor_init_file = vendor_path / "__init__.py"
-        vendor_init_file.touch()
-        if dev_tools_config.append_distributions_to_path:
-            vendor_init_file.write_text(VENDOR_PATH_APPEND_SCRIPT)
+    vendor_path.mkdir(parents=True)
+    vendor_init_file = vendor_path / "__init__.py"
+    vendor_init_file.touch()
 
-    runtime_package_names = []
-    # copy dist infos (licenses etc.) and all provided top level packages
-    for dist in (
+    if dev_tools_config.append_distributions_to_path:
+        vendor_init_file.write_text(VENDOR_PATH_APPEND_SCRIPT)
+        insert_as_first_import(
+            build_directory_path / plugin_package_name / "__init__.py",
+            f"{plugin_package_name}._vendor",
+        )
+
+    vendored_runtime_top_level_names: list[str] = []
+
+    for vendored_distribution in (
         dev_tools_config.runtime_distributions
         + dev_tools_config.extra_runtime_distributions
     ):
-        dist_info_path = Path(dist._path)  # type: ignore
+        # if a recursively found dependency is provided by system packages,
+        # assume it does not have to be bundled (this is possibly dangerous,
+        # if build is made on a different system package set than runtime)
         if (
-            Path(sys.base_prefix) in dist_info_path.parent.parents
-            and dist in dev_tools_config.extra_runtime_distributions
+            vendored_distribution in dev_tools_config.extra_runtime_distributions
+            and Path(
+                vendored_distribution._path,  # type: ignore
+            ).is_relative_to(Path(sys.base_prefix))
         ):
-            # If build enviroment system packages include a dependency
-            # resolved via recursive flag, assume it does not have
-            # to be bundled (possibly dangerous, if build is made on
-            # a different system package set than runtime)
             LOGGER.warning(
                 "skipping recursively found runtime requirement %s "
                 "because it is included in system packages",
-                dist.metadata["Name"],
+                vendored_distribution.name,
             )
             continue
 
-        LOGGER.debug(
-            "bundling runtime requirement %s",
-            dist.metadata["Name"],
-        )
-
-        dist_top_level_packages = get_distribution_top_level_package_names(dist)
-        dist_top_level_scripts = get_distribution_top_level_script_names(dist)
-
-        # don't vendor self, but allow to vendor other packages provided
+        # don't vendor plugin package, but allow to vendor other packages provided
         # from plugin distribution. if "-e ." installs "my-plugin-name" distribution
         # containing my_plugin & my_util_package top level packages, bundling is only
         # needed for my_util_package
-        dist_top_level_packages = [
-            name for name in dist_top_level_packages if name != plugin_package_name
-        ]
+        dist_top_level_names = get_distribution_top_level_names(vendored_distribution)
+        dist_top_level_names.discard(plugin_package_name)
 
         LOGGER.debug(
-            "bundling %s top level packages and %s top level scripts",
-            dist_top_level_packages,
-            dist_top_level_scripts,
+            "bundling runtime requirement %s with top level names %s",
+            vendored_distribution.name,
+            dist_top_level_names,
+        )
+        _copy_distribution_files(
+            vendored_distribution,
+            dist_top_level_names,
+            vendor_path,
         )
 
-        runtime_package_names.extend(dist_top_level_packages)
-        runtime_package_names.extend(dist_top_level_scripts)
+        vendored_runtime_top_level_names.extend(dist_top_level_names)
 
-        LOGGER.debug(
-            "copying %s to build directory",
-            dist_info_path.resolve(),
-        )
-        shutil.copytree(
-            src=dist_info_path,
-            dst=build_directory_path
-            / plugin_package_name
-            / "_vendor"
-            / dist_info_path.name,
-            ignore=IGNORED_FILES,
-        )
+    if not dev_tools_config.append_distributions_to_path:
+        for package_name in vendored_runtime_top_level_names:
+            LOGGER.debug("rewriting imports for %s", package_name)
 
-        for package_name in dist_top_level_packages + dist_top_level_scripts:
-            _copy_package(
-                build_directory_path,
-                dist,
-                dist_info_path,
-                package_name,
-                plugin_package_name,
-            )
+            py_files = list((build_directory_path / plugin_package_name).rglob("*.py"))
+            ui_files = list((build_directory_path / plugin_package_name).rglob("*.ui"))
 
-    if dev_tools_config.append_distributions_to_path:
-        plugin_init_file = (build_directory_path / plugin_package_name) / "__init__.py"
-        insert_as_first_import(plugin_init_file, f"{plugin_package_name}._vendor")
+            for source_file in py_files + ui_files:
+                rewrite_imports_in_source_file(
+                    source_file,
+                    rewritten_package_name=package_name,
+                    container_package_name=f"{plugin_package_name}._vendor",
+                )
+
+
+def _copy_distribution_files(
+    distribution: Distribution,
+    top_level_names: set[str],
+    target_root_path: Path,
+) -> None:
+    if (file_paths := distribution.files) is None:
+        LOGGER.warning("could not resolve %s contents to bundle", distribution.name)
         return
 
-    for package_name in runtime_package_names:
-        LOGGER.debug("rewriting imports for %s", package_name)
-
-        py_files = list((build_directory_path / plugin_package_name).rglob("*.py"))
-        ui_files = list((build_directory_path / plugin_package_name).rglob("*.ui"))
-
-        for source_file in py_files + ui_files:
-            rewrite_imports_in_source_file(
-                source_file,
-                rewritten_package_name=package_name,
-                container_package_name=f"{plugin_package_name}._vendor",
-            )
-
-
-def _copy_package(
-    build_directory_path: Path,
-    dist: Distribution,
-    dist_info_path: Path,
-    original_top_level_name: str,
-    plugin_package_name: str,
-) -> None:
+    # bundle metadata directory first
+    distribution_metadata_path = Path(distribution._path)  # type: ignore
     LOGGER.debug(
-        "bundling runtime requirement %s package %s",
-        dist.metadata["Name"],
-        original_top_level_name,
+        "copying %s to build directory",
+        distribution_metadata_path.resolve(),
+    )
+    shutil.copytree(
+        src=distribution_metadata_path,
+        dst=target_root_path / distribution_metadata_path.name,
+        ignore=IGNORED_FILES,
     )
 
-    # top-level package
-    dist_package_src = dist_info_path.parent / original_top_level_name
-    if dist_package_src.exists():
-        LOGGER.debug(
-            "copying %s to build directory",
-            dist_package_src.resolve(),
-        )
+    directories_to_bundle = {
+        top_directory_name
+        for file_path in file_paths
+        if len(file_path.parts) > 1
+        and (top_directory_name := file_path.parts[0]) in top_level_names
+    }
+    files_to_bundle = {
+        file_path
+        for file_path in file_paths
+        if len(file_path.parts) == 1 and file_path.stem in top_level_names
+    }
+
+    record_root_path = distribution_metadata_path.parent
+
+    for directory_path in directories_to_bundle:
+        original_path = record_root_path / directory_path
+        new_path = target_root_path / directory_path
+
+        LOGGER.debug("copying %s to build directory", original_path.resolve())
+
         shutil.copytree(
-            src=dist_package_src,
-            dst=(
-                build_directory_path
-                / plugin_package_name
-                / "_vendor"
-                / original_top_level_name
-            ),
+            src=original_path,
+            dst=new_path,
             ignore=IGNORED_FILES,
         )
-        return
 
-    # top level script
-    dist_script_src = dist_info_path.parent / f"{original_top_level_name}.py"
-    if dist_script_src.exists():
-        LOGGER.debug(
-            "copying %s to build directory",
-            dist_script_src.resolve(),
-        )
+    for file_path in files_to_bundle:
+        original_path = record_root_path / file_path
+        new_path = target_root_path / file_path
+
+        LOGGER.debug("copying %s to build directory", original_path.resolve())
+
         shutil.copy(
-            src=dist_script_src,
-            dst=build_directory_path / plugin_package_name / "_vendor",
+            src=original_path,
+            dst=new_path,
         )
-        return
-
-    # pyd file
-    pyd_files = list(dist_info_path.parent.glob(f"{original_top_level_name}*.pyd"))
-    if pyd_files:
-        for dist_binary_src in pyd_files:
-            shutil.copy(
-                src=dist_binary_src,
-                dst=build_directory_path / plugin_package_name / "_vendor",
-            )
-        return
-
-    if not original_top_level_name.startswith("_"):
-        raise ValueError(
-            f"Sources for {original_top_level_name} "
-            f"from runtime requirement {dist.metadata['Name']} "
-            f"cannot be found in {dist_info_path.parent}"
-        )
-
-    LOGGER.warning("Could not find %s to bundle", original_top_level_name)

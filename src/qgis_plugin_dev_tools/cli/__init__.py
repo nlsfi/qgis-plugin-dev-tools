@@ -32,9 +32,7 @@ from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
 from qgis_plugin_dev_tools.publish import publish_plugin_zip_file
 from qgis_plugin_dev_tools.start import launch_development_qgis
 from qgis_plugin_dev_tools.start.config import DevelopmentModeConfig
-from qgis_plugin_dev_tools.utils.distributions import (
-    get_distribution_top_level_package_names,
-)
+from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level_names
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ def start(dotenv_file_paths: List[Path]) -> None:
             plugin_dependency_package_names=[
                 name
                 for dist in dev_tools_config.runtime_distributions
-                for name in get_distribution_top_level_package_names(dist)
+                for name in get_distribution_top_level_names(dist)
             ],
             debugger_library=dotenv_config.DEBUGGER_LIBRARY,
             extra_plugin_package_names=[

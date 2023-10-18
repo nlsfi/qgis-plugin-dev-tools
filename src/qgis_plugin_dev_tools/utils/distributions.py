@@ -19,7 +19,7 @@
 import importlib.util
 import logging
 from importlib.machinery import SourceFileLoader
-from typing import Dict, List, Optional, cast
+from typing import Optional, cast
 
 import importlib_metadata
 from importlib_metadata import Distribution, distribution
@@ -28,41 +28,39 @@ from packaging.requirements import Requirement
 LOGGER = logging.getLogger(__name__)
 
 
-def get_distribution_top_level_package_names(dist: Distribution) -> List[str]:
-    if (
-        top_level_contents := cast(
-            Optional[str],
-            dist.read_text("top_level.txt"),
-        )
-    ) is None:
-        LOGGER.debug("%s has no top level packages", dist.name)
-        return []
-
-    return top_level_contents.split()
-
-
-def get_distribution_top_level_script_names(dist: Distribution) -> List[str]:
+def get_distribution_top_level_names(dist: Distribution) -> set[str]:
     if (file_paths := dist.files) is None:
-        LOGGER.warning("%s file catalog missing", dist.name)
-        return []
+        LOGGER.warning("could not resolve %s top level names", dist.name)
+        return set()
 
-    return [
-        file_path.stem
-        for file_path in file_paths
-        if len(file_path.parts) == 1 and file_path.match("*.py")
-    ]
+    return {
+        top_level_directory_name
+        for path in file_paths
+        if (
+            len(path.parts) > 1
+            and not (top_level_directory_name := path.parts[0]).endswith(
+                (".dist-info", ".egg-info")
+            )
+            and top_level_directory_name not in ("..", "__pycache__")
+        )
+    } | {
+        path.stem
+        for path in file_paths
+        if len(path.parts) == 1 and path.suffix in (".py", ".pyd")
+    }
 
 
-def get_distribution_requirements(dist: Distribution) -> Dict[str, Distribution]:
+def get_distribution_requirements(dist: Distribution) -> dict[str, Distribution]:
+    requirement_distributions: dict[str, Distribution] = {}
+
     requirements = [
         Requirement(requirement.split(" ")[0])
         for requirement in dist.requires or []
         if "extra ==" not in requirement
     ]
-    distributions = {}
     for requirement in requirements:
         try:
-            distributions[requirement.name] = distribution(requirement.name)
+            requirement_distributions[requirement.name] = distribution(requirement.name)
         except importlib_metadata.PackageNotFoundError:
             LOGGER.warning(
                 "Getting distribution for %s failed. "
@@ -76,8 +74,11 @@ def get_distribution_requirements(dist: Distribution) -> Dict[str, Distribution]
                 LOGGER.error("Could not find package %s", requirement.name)
             continue
 
-    sub_requirements = {}
-    for requirement in distributions.values():
-        sub_requirements.update(get_distribution_requirements(requirement))
-    distributions.update(sub_requirements)
-    return distributions
+    nested_requirement_distributions: dict[str, Distribution] = {}
+    for requirement_distribution in requirement_distributions.values():
+        nested_requirement_distributions.update(
+            get_distribution_requirements(requirement_distribution)
+        )
+    requirement_distributions.update(nested_requirement_distributions)
+
+    return requirement_distributions
