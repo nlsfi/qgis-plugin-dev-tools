@@ -105,6 +105,15 @@ Development mode also enables using and developing multiple plugins easily if ce
 
 Extra plugins are loaded on launch and reloaded together with the main plugin if [Plugin Reloader] is used.
 
+You can disable plugin auto-load by using `pyproject.toml` configuration (for example when using a dependency, that also provides a plugin entrypoint):
+
+```toml
+[tool.qgis_plugin_dev_tools]
+disabled_extra_plugins = [
+  "unwanted_plugin_package_name",
+]
+```
+
 ## Development of qgis-plugin-dev-tools
 
 See [development readme](./DEVELOPMENT.md).

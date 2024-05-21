@@ -48,6 +48,7 @@ class DevToolsConfig:
     changelog_file_path: Path
     append_distributions_to_path: bool
     version_number_source: VersionNumberSource
+    disabled_extra_plugins: list[str]
 
     def __init__(  # noqa: PLR0913
         self,
@@ -56,7 +57,8 @@ class DevToolsConfig:
         changelog_file_path: Path,
         append_distributions_to_path: bool,
         auto_add_recursive_runtime_dependencies: bool,
-        version_number_source: VersionNumberSource = VersionNumberSource.CHANGELOG,
+        version_number_source: VersionNumberSource,
+        disabled_extra_plugins: list[str],
     ) -> None:
         plugin_package_spec = find_spec(plugin_package_name)
         if plugin_package_spec is None or plugin_package_spec.origin is None:
@@ -74,6 +76,7 @@ class DevToolsConfig:
         self.append_distributions_to_path = append_distributions_to_path
         self.version_number_source = version_number_source
         self.extra_runtime_distributions = []
+        self.disabled_extra_plugins = disabled_extra_plugins
 
         if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
@@ -108,4 +111,5 @@ class DevToolsConfig:
             version_number_source=VersionNumberSource.from_config_value(
                 pyproject_config.version_number_source
             ),
+            disabled_extra_plugins=pyproject_config.disabled_extra_plugins,
         )

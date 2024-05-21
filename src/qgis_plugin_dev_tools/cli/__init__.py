@@ -67,7 +67,10 @@ def start(dotenv_file_paths: list[Path]) -> None:
             extra_plugin_package_names=[
                 entry_point.name
                 for entry_point in entry_points_found_from_python_env
-                if entry_point.name != dev_tools_config.plugin_package_name
+                if (
+                    entry_point.name != dev_tools_config.plugin_package_name
+                    and entry_point.name not in dev_tools_config.disabled_extra_plugins
+                )
             ],
         )
     )
