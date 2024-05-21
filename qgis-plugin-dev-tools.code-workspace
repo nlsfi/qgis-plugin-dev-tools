@@ -28,8 +28,8 @@
         "[python]": {
             "editor.formatOnSave": true,
             "editor.codeActionsOnSave": {
-                "source.organizeImports.ruff": true,
-                "source.fixAll": true
+                "source.organizeImports.ruff": "explicit",
+                "source.fixAll": "explicit"
             },
             "editor.defaultFormatter": "ms-python.black-formatter",
         },
