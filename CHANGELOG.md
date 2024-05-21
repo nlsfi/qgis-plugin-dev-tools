@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Unreleased
 
 - Fix: Bundle contents by parsing pep-compliant distribution file catalog instead of possibly missing tool-specific top-level.txt
+- Feat: Allow disabling auto-loaded entrypoint plugins
 
 ## [0.6.2] - 2023-09-27
 

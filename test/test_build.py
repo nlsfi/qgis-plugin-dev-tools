@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from qgis_plugin_dev_tools.build import make_plugin_zip
-from qgis_plugin_dev_tools.config import DevToolsConfig
+from qgis_plugin_dev_tools.config import DevToolsConfig, VersionNumberSource
 
 
 @pytest.fixture()
@@ -65,6 +65,8 @@ def dev_tools_config(plugin_dir: Path) -> DevToolsConfig:
         changelog_file_path=plugin_dir / "CHANGELOG.md",
         append_distributions_to_path=True,
         auto_add_recursive_runtime_dependencies=True,
+        version_number_source=VersionNumberSource.CHANGELOG,
+        disabled_extra_plugins=[],
     )
 
 
@@ -78,6 +80,8 @@ def dev_tools_config_with_duplicate_dependencies(plugin_dir: Path) -> DevToolsCo
         changelog_file_path=plugin_dir / "CHANGELOG.md",
         append_distributions_to_path=True,
         auto_add_recursive_runtime_dependencies=True,
+        version_number_source=VersionNumberSource.CHANGELOG,
+        disabled_extra_plugins=[],
     )
 
 
@@ -92,6 +96,8 @@ def dev_tools_config_minimal(plugin_dir: Path) -> DevToolsConfig:
         changelog_file_path=plugin_dir / "CHANGELOG.md",
         append_distributions_to_path=False,
         auto_add_recursive_runtime_dependencies=False,
+        version_number_source=VersionNumberSource.CHANGELOG,
+        disabled_extra_plugins=[],
     )
 
 

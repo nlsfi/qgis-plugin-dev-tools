@@ -42,6 +42,7 @@ class PyprojectConfig:
     version_number_source: Union[
         Literal["changelog"], Literal["distribution"]
     ] = "changelog"
+    disabled_extra_plugins: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.version_number_source not in ["changelog", "distribution"]:
