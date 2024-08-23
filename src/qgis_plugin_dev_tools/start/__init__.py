@@ -42,6 +42,8 @@ def launch_development_qgis(
                 development_mode_config.qgis_executable_path,
                 bootstrap_file_path,
                 development_mode_config.profile_name,
+                development_mode_config.locale,
+                development_mode_config.ui_ini,
             )
 
             LOGGER.info("waiting for qgis to connect")

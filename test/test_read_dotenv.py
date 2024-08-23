@@ -46,6 +46,8 @@ def test_optionals_can_be_missing(
     result = read_dotenv_configs([test_file])
     assert result.DEVELOPMENT_PROFILE_NAME is None
     assert result.DEBUGGER_LIBRARY is None
+    assert result.QGIS_LOCALE is None
+    assert result.QGIS_GUI_INI is None
 
 
 def test_other_vars_saved_as_runtime_env(

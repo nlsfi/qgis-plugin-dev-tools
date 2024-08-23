@@ -34,14 +34,18 @@ class DotenvConfig:
     QGIS_EXECUTABLE_PATH: Path
     DEBUGGER_LIBRARY: Optional[str]
     DEVELOPMENT_PROFILE_NAME: Optional[str]
+    QGIS_LOCALE: Optional[str]
+    QGIS_GUI_INI: Optional[str]
     runtime_environment: dict[str, str]
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         *,
         QGIS_EXECUTABLE_PATH: str,  # noqa: N803
         DEBUGGER_LIBRARY: Optional[str] = None,  # noqa: N803
         DEVELOPMENT_PROFILE_NAME: Optional[str] = None,  # noqa: N803
+        QGIS_LOCALE: Optional[str] = None,  # noqa: N803
+        QGIS_GUI_INI: Optional[str] = None,  # noqa: N803
         **other_vars: str,
     ) -> None:
         self.QGIS_EXECUTABLE_PATH = Path(QGIS_EXECUTABLE_PATH)
@@ -51,6 +55,8 @@ class DotenvConfig:
             )
         self.DEBUGGER_LIBRARY = DEBUGGER_LIBRARY
         self.DEVELOPMENT_PROFILE_NAME = DEVELOPMENT_PROFILE_NAME
+        self.QGIS_LOCALE = QGIS_LOCALE
+        self.QGIS_GUI_INI = QGIS_GUI_INI
         self.runtime_environment = other_vars
 
 

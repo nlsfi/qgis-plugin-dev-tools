@@ -26,6 +26,8 @@ from typing import Optional
 class DevelopmentModeConfig:
     qgis_executable_path: Path
     profile_name: Optional[str]
+    locale: Optional[str]
+    ui_ini: Optional[str]
     runtime_environment: dict[str, str]
     runtime_library_paths: list[Path]
     plugin_package_path: Path
