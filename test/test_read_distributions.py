@@ -14,9 +14,7 @@ def sample_dist() -> Any:
 def test_get_distribution_requirements(sample_dist: Any):
     requirements = get_distribution_requirements(sample_dist)
     assert sorted(requirements.keys()) == [
-        "atomicwrites",
         "attrs",
-        "colorama",
         "importlib-metadata",
         "iniconfig",
         "packaging",

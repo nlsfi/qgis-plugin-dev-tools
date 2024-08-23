@@ -121,13 +121,9 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", tmp_path: Path):
     assert vendor_files == {
         "__init__.py",
         "_pytest",
-        "atomicwrites",
-        "atomicwrites-1.4.0.dist-info",
         "attr",
         "attrs",
         "attrs-21.4.0.dist-info",
-        "colorama",
-        "colorama-0.4.4.dist-info",
         "importlib_metadata",
         "importlib_metadata-4.11.3.dist-info",
         "iniconfig",
@@ -142,7 +138,7 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", tmp_path: Path):
         "pytest-6.2.5.dist-info",
         "toml",
         "toml-0.10.2.dist-info",
-        "typing_extensions-4.2.0.dist-info",
+        "typing_extensions-4.12.2.dist-info",
         "typing_extensions.py",  # no top-level.txt in .dist-info, parsed from record
         "zipp-3.8.0.dist-info",
         "zipp.py",  # top-level.txt in .dist-info, includes zipp
@@ -172,15 +168,11 @@ def test_make_zip_with_duplicate_dependencies(
     assert vendor_files == {
         "__init__.py",
         "_pytest",
-        "atomicwrites",
-        "atomicwrites-1.4.0.dist-info",
         "attr",
         "attrs",
         "attrs-21.4.0.dist-info",
-        "colorama",
-        "colorama-0.4.4.dist-info",
         "coverage",
-        "coverage-6.3.2.dist-info",
+        "coverage-7.6.1.dist-info",
         "importlib_metadata",
         "importlib_metadata-4.11.3.dist-info",
         "iniconfig",
@@ -194,10 +186,10 @@ def test_make_zip_with_duplicate_dependencies(
         "pytest",
         "pytest-6.2.5.dist-info",
         "pytest_cov",
-        "pytest_cov-2.12.0.dist-info",
+        "pytest_cov-4.1.0.dist-info",
         "toml",
         "toml-0.10.2.dist-info",
-        "typing_extensions-4.2.0.dist-info",
+        "typing_extensions-4.12.2.dist-info",
         "typing_extensions.py",  # no top-level.txt in .dist-info, parsed from record
         "zipp-3.8.0.dist-info",
         "zipp.py",  # top-level.txt in .dist-info, includes zipp
