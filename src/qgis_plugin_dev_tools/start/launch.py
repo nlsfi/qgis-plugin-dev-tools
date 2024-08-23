@@ -29,6 +29,8 @@ def launch_qgis_with_bootstrap_script(
     qgis_executable_path: Path,
     bootstrap_script_path: Path,
     profile_name: Optional[str],
+    locale: Optional[str],
+    ui_ini: Optional[str],
 ) -> None:
     args = [
         str(qgis_executable_path),
@@ -41,6 +43,16 @@ def launch_qgis_with_bootstrap_script(
         args.extend(["--profile", profile_name])
     else:
         LOGGER.info("using default profile name")
+
+    if locale:
+        LOGGER.info("using locale name %s", locale)
+        args.extend(["--lang", locale])
+    else:
+        LOGGER.info("using default locale")
+
+    if ui_ini:
+        LOGGER.info("using ui ini file from path %s", ui_ini)
+        args.extend(["--customizationfile", ui_ini])
 
     LOGGER.debug("launch command args %s", args)
 

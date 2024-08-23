@@ -83,6 +83,8 @@ By default config is read from `pyproject.toml` and runtime config from `.env` i
 QGIS_EXECUTABLE_PATH= # path to qgis-bin/qgis-bin-ltr or .exe equivalents, necessary
 # DEBUGGER_LIBRARY= # debugpy/pydevd to start a debugger on init, library must be installed to the environment
 # DEVELOPMENT_PROFILE_NAME= # name of the profile that qgis is launched with, otherwise uses default
+# QGIS_LOCALE= # locale code of QGIS, otherwise uses default
+# QGIS_GUI_INI= # path to ini file containing QGIS UI customizations
 
 # any other variables are added to the runtime QGIS environment
 # SOMETHING=something

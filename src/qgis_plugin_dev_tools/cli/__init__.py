@@ -54,6 +54,8 @@ def start(dotenv_file_paths: list[Path]) -> None:
         DevelopmentModeConfig(
             qgis_executable_path=dotenv_config.QGIS_EXECUTABLE_PATH,
             profile_name=dotenv_config.DEVELOPMENT_PROFILE_NAME,
+            locale=dotenv_config.QGIS_LOCALE,
+            ui_ini=dotenv_config.QGIS_GUI_INI,
             runtime_environment=dotenv_config.runtime_environment,
             runtime_library_paths=[Path(p) for p in sys.path],
             plugin_package_path=dev_tools_config.plugin_package_path,
