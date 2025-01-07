@@ -61,6 +61,14 @@ plugin_package_name = "your_plugin_package_name"
 version_number_source = "distribution"  # or "changelog" (default if missing)
 ```
 
+QGIS plugins are required to have a LICENSE file included in the plugin package. However, usually it is more convenient to keep the license file in the root of the repository. LICENSE can be copied automatically to the plugin zip while packaging if such file is found. A relative path to the license file can also be configured with `license_file_path` option.
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+license_file_path = "docs/my-license.md"
+```
+
 ## Plugin packaging
 
 Run `qgis-plugin-dev-tools build` (short `qpdt b`) to package the plugin and any runtime dependencies to a standard QGIS plugin zip file, that can be installed and published.

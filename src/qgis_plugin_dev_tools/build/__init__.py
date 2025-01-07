@@ -35,6 +35,7 @@ from qgis_plugin_dev_tools.build.metadata import update_metadata_file
 from qgis_plugin_dev_tools.build.packaging import (
     copy_plugin_code,
     copy_runtime_requirements,
+    copy_license,
 )
 from qgis_plugin_dev_tools.config import DevToolsConfig, VersionNumberSource
 
@@ -84,6 +85,7 @@ def make_plugin_zip(
             changelog_contents,
         )
         copy_runtime_requirements(dev_tools_config, build_directory_path)
+        copy_license(dev_tools_config, build_directory_path)
 
         LOGGER.debug("creating built plugin zip file from build directory")
 

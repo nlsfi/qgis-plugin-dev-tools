@@ -20,6 +20,8 @@
 import logging
 import shutil
 import sys
+from typing import Generator, Optional
+
 from importlib_metadata import Distribution
 from pathlib import Path
 
@@ -133,6 +135,45 @@ def copy_runtime_requirements(
                 )
 
 
+def copy_license(dev_tools_config: DevToolsConfig, build_directory_path: Path) -> None:
+    plugin_build_path = build_directory_path / dev_tools_config.plugin_package_name
+    target_license_file = plugin_build_path / "LICENSE"
+    license_file = dev_tools_config.license_file_path
+    if license_file is not None:
+        if not license_file.exists():
+            LOGGER.error(
+                f"Configured license file "
+                f"{license_file} "
+                f"does not exist. Check the configuration."
+            )
+            return
+
+        if target_license_file.exists():
+            LOGGER.warning(
+                f"Overwriting existing license {target_license_file} "
+                f"with configured license {license_file}"
+            )
+        LOGGER.debug(f"Copying license file {license_file} to {build_directory_path}")
+        shutil.copy(license_file, target_license_file)
+        return
+
+    if target_license_file.exists():
+        LOGGER.debug(f"Existing license file {target_license_file} found.")
+        return
+
+    # Try finding the license
+    license_file = _find_existing_license_file(dev_tools_config.pyproject_path)
+    if not license_file:
+        LOGGER.warning(
+            "Cannot copy LICENSE file since it does not exist. "
+            "Configure valid LICENSE file with license_file_path in pyproject.toml"
+        )
+        return
+
+    LOGGER.debug(f"Copying license file {license_file} to {build_directory_path}")
+    shutil.copy(license_file, target_license_file)
+
+
 def _copy_distribution_files(
     distribution: Distribution,
     top_level_names: set[str],
@@ -190,3 +231,15 @@ def _copy_distribution_files(
             src=original_path,
             dst=new_path,
         )
+
+
+def _find_existing_license_file(search_path: Path) -> Optional[Path]:
+    def generate_license_candidates() -> Generator[Path, None, None]:
+        for base_name in ("LICENSE", "license"):
+            for extension in ("", ".md", ".MD"):
+                yield search_path / f"{base_name}{extension}"
+
+    for potential_path in generate_license_candidates():
+        if potential_path.exists():
+            return potential_path
+    return None
