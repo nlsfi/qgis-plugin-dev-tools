@@ -5,7 +5,7 @@ import zipfile
 from pathlib import Path
 
 import pytest
-from qgis_plugin_dev_tools.build import make_plugin_zip
+from qgis_plugin_dev_tools.build import copy_license, make_plugin_zip
 from qgis_plugin_dev_tools.config import DevToolsConfig, VersionNumberSource
 
 
@@ -49,6 +49,9 @@ def plugin_dir(tmp_path: Path) -> Path:
     main_file = plugin_dir / "__init__.py"
     main_file.touch()
 
+    license_file = tmp_path / "LICENSE"
+    license_file.touch()
+
     os.chdir(tmp_path.resolve())
     sys.path.append(tmp_path.resolve().as_posix())
 
@@ -56,10 +59,11 @@ def plugin_dir(tmp_path: Path) -> Path:
 
 
 @pytest.fixture()
-def dev_tools_config(plugin_dir: Path) -> DevToolsConfig:
+def dev_tools_config(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
     return DevToolsConfig(
+        pyproject_path=tmp_path,
         plugin_package_name="Plugin",
         runtime_requires=["pytest"],
         changelog_file_path=plugin_dir / "CHANGELOG.md",
@@ -67,14 +71,18 @@ def dev_tools_config(plugin_dir: Path) -> DevToolsConfig:
         auto_add_recursive_runtime_dependencies=True,
         version_number_source=VersionNumberSource.CHANGELOG,
         disabled_extra_plugins=[],
+        license_file_path=None,
     )
 
 
 @pytest.fixture()
-def dev_tools_config_with_duplicate_dependencies(plugin_dir: Path) -> DevToolsConfig:
+def dev_tools_config_with_duplicate_dependencies(
+    tmp_path: Path, plugin_dir: Path
+) -> DevToolsConfig:
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
     return DevToolsConfig(
+        pyproject_path=tmp_path,
         plugin_package_name="Plugin",
         runtime_requires=["pytest-cov"],
         changelog_file_path=plugin_dir / "CHANGELOG.md",
@@ -82,15 +90,17 @@ def dev_tools_config_with_duplicate_dependencies(plugin_dir: Path) -> DevToolsCo
         auto_add_recursive_runtime_dependencies=True,
         version_number_source=VersionNumberSource.CHANGELOG,
         disabled_extra_plugins=[],
+        license_file_path=None,
     )
 
 
 @pytest.fixture()
-def dev_tools_config_minimal(plugin_dir: Path) -> DevToolsConfig:
+def dev_tools_config_minimal(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
     # No python path append and not recursive deps
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
     return DevToolsConfig(
+        pyproject_path=tmp_path,
         plugin_package_name="Plugin",
         runtime_requires=["pytest"],
         changelog_file_path=plugin_dir / "CHANGELOG.md",
@@ -98,6 +108,7 @@ def dev_tools_config_minimal(plugin_dir: Path) -> DevToolsConfig:
         auto_add_recursive_runtime_dependencies=False,
         version_number_source=VersionNumberSource.CHANGELOG,
         disabled_extra_plugins=[],
+        license_file_path=None,
     )
 
 
@@ -115,6 +126,8 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", tmp_path: Path):
         expected_zip, "Plugin/_vendor/__init__.py"
     )
     vendor_files = _get_file_names(expected_zip, "Plugin/_vendor/")
+    plugin_files = _get_file_names(expected_zip, "Plugin/")
+    assert "LICENSE" in plugin_files
 
     assert "import Plugin._vendor" in plugin_init_file_contents
     assert "sys.path.append" in vendor_init_file_contents
@@ -223,6 +236,90 @@ def test_make_zip_with_minimal_config(
         "pytest",
         "pytest-6.2.5.dist-info",
     }
+
+
+@pytest.mark.parametrize("licence_file_name", ["LICENSE", "license.md"])
+def test_make_zip_copies_license_from_custom_path(
+    dev_tools_config_minimal: "DevToolsConfig", tmp_path: Path, licence_file_name: str
+):
+    # Remove original
+    original_license = tmp_path / "LICENSE"
+    os.remove(original_license)
+
+    license_dir = tmp_path / "license"
+    license_dir.mkdir()
+    license_file = license_dir / licence_file_name
+    license_file.touch()
+    dev_tools_config_minimal.license_file_path = license_file
+    target_path = tmp_path / "dist"
+    expected_zip = target_path / "Plugin-test-version.zip"
+
+    make_plugin_zip(
+        dev_tools_config_minimal, target_path, override_plugin_version="test-version"
+    )
+
+    assert target_path.exists()
+    assert expected_zip.exists()
+    plugin_files = _get_file_names(expected_zip, "Plugin/")
+    assert "LICENSE" in plugin_files
+
+
+def test_make_zip_copies_license_with_different_name(
+    dev_tools_config_minimal: "DevToolsConfig",
+    tmp_path: Path,
+    plugin_dir: Path,
+):
+    # Remove original
+    original_license = tmp_path / "LICENSE"
+    os.remove(original_license)
+
+    license_file = tmp_path / "license.md"
+    license_file.touch()
+
+    copy_license(dev_tools_config_minimal, plugin_dir.parent)
+
+    assert (plugin_dir / "LICENSE").exists()
+
+
+def test_make_zip_does_not_create_license_if_it_does_not_exist(
+    dev_tools_config_minimal: "DevToolsConfig", tmp_path: Path
+):
+    # Remove original
+    original_license = tmp_path / "LICENSE"
+    os.remove(original_license)
+
+    target_path = tmp_path / "dist"
+    expected_zip = target_path / "Plugin-test-version.zip"
+
+    make_plugin_zip(
+        dev_tools_config_minimal, target_path, override_plugin_version="test-version"
+    )
+
+    assert target_path.exists()
+    assert expected_zip.exists()
+    plugin_files = _get_file_names(expected_zip, "Plugin/")
+    assert "LICENSE" not in plugin_files
+
+
+def test_make_zip_does_not_create_license_if_configured_one_does_not_exist(
+    dev_tools_config_minimal: "DevToolsConfig", tmp_path: Path
+):
+    dev_tools_config_minimal.license_file_path = tmp_path / "non-existing-license"
+
+    original_license = tmp_path / "LICENSE"
+    os.remove(original_license)
+
+    target_path = tmp_path / "dist"
+    expected_zip = target_path / "Plugin-test-version.zip"
+
+    make_plugin_zip(
+        dev_tools_config_minimal, target_path, override_plugin_version="test-version"
+    )
+
+    assert target_path.exists()
+    assert expected_zip.exists()
+    plugin_files = _get_file_names(expected_zip, "Plugin/")
+    assert "LICENSE" not in plugin_files
 
 
 def _get_file_names(zip_file: Path, prefix: str) -> set[str]:
