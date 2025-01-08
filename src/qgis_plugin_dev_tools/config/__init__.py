@@ -105,7 +105,7 @@ class DevToolsConfig:
     def from_pyproject_config(pyproject_file_path: Path) -> "DevToolsConfig":
         pyproject_config = read_pyproject_config(pyproject_file_path)
         return DevToolsConfig(
-            pyproject_path=pyproject_file_path,
+            pyproject_path=pyproject_file_path.parent,
             plugin_package_name=pyproject_config.plugin_package_name,
             runtime_requires=pyproject_config.runtime_requires,
             # TODO: allow setting path in pyproject file?

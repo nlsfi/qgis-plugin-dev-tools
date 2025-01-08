@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Fix: Fix license copying
+
 ## [0.9.0] - 2025-01-08
 
 - Feat: Copy license into the plugin zip while deploying
