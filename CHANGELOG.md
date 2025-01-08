@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: Copy license into the plugin zip while deploying
+
 ## [0.8.0] - 2024-08-23
 
 - Feat: Add locale and ui ini options to be able to further customize development environment
