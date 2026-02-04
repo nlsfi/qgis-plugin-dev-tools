@@ -249,7 +249,7 @@ def _start_debugger(library_name: Optional[str], python_executable_path: Path) -
             import pydevd  # noqa: SC200
 
             pydevd.settrace(  # noqa: SC200
-                "localhost", port=5678, stdoutToServer=True, stderrToServer=True
+                "localhost", port=5678, stdout_to_server=True, stderr_to_server=True
             )
 
         else:
