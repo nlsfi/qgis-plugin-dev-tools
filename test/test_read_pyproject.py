@@ -84,6 +84,7 @@ def test_section_read_to_dataclass(
             'runtime_requires = ["one", "another"]',
             "use_dangerous_vendor_sys_path_append = true",
             "auto_add_recursive_runtime_dependencies = true",
+            'changelog_file_path = "../../CHANGELOG.md"',
         ]
     )
 
@@ -93,3 +94,4 @@ def test_section_read_to_dataclass(
     assert result.runtime_requires == ["one", "another"]
     assert result.use_dangerous_vendor_sys_path_append
     assert result.auto_add_recursive_runtime_dependencies
+    assert result.changelog_file_path == "../../CHANGELOG.md"
