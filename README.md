@@ -106,6 +106,14 @@ QGIS_EXECUTABLE_PATH= # path to qgis-bin/qgis-bin-ltr or .exe equivalents, neces
 # SOMETHING=something
 ```
 
+`.env` can also be configured with `pyproject.toml` configuration `env_file_path` option..
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+env_file_path = "../../.env"
+```
+
 Development mode bootstraps the launched QGIS to have access to any packages available to the launching python environment, setups enviroment variables, configures a debugger, and installs and enables the developed plugin package.
 
 Additionally editable installs for the plugin dependencies are supported. For example with a dependency to `some_pypi_package`, use `pip install -e /path/to/some_pypi_package` to provide `some_pypi_package` in editable mode from a local directory, and use [Plugin Reloader] to refresh new code when its changed on disk. This will also reload the declared dependencies.

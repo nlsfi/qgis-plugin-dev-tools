@@ -52,6 +52,7 @@ class DevToolsConfig:
     version_number_source: VersionNumberSource
     disabled_extra_plugins: list[str]
     license_file_path: Optional[Path]
+    env_file_path: Optional[Path]
 
     def __init__(  # noqa: PLR0913
         self,
@@ -64,6 +65,7 @@ class DevToolsConfig:
         version_number_source: VersionNumberSource,
         disabled_extra_plugins: list[str],
         license_file_path: Optional[Path],
+        env_file_path: Optional[Path],
     ) -> None:
         plugin_package_spec = find_spec(plugin_package_name)
         if plugin_package_spec is None or plugin_package_spec.origin is None:
@@ -84,6 +86,7 @@ class DevToolsConfig:
         self.extra_runtime_distributions = []
         self.disabled_extra_plugins = disabled_extra_plugins
         self.license_file_path = license_file_path
+        self.env_file_path = env_file_path
 
         if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
@@ -125,5 +128,8 @@ class DevToolsConfig:
             license_file_path=pyproject_file_path.parent
             / pyproject_config.license_file_path
             if pyproject_config.license_file_path
+            else None,
+            env_file_path=pyproject_file_path.parent / pyproject_config.env_file_path
+            if pyproject_config.env_file_path
             else None,
         )

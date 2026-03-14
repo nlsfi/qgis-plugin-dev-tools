@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: Add env_file_path and changelog_file_path pyproject.toml options
+
 ## [0.9.2] - 2026-02-04
 
 - Fix: use correct syntax for pydevd debugging

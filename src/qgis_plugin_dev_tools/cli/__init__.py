@@ -43,7 +43,12 @@ def start(dotenv_file_paths: list[Path]) -> None:
     # TODO: allow setting debugger flag from cli?
     # TODO: find default executable paths to allow zero-config .env?
     # TODO: rglob('metadata.txt') from cwd to allow zero-config pyproject.toml?
-    dotenv_config = read_dotenv_configs(dotenv_file_paths)
+    if dev_tools_config.env_file_path:
+        dotenv_config = read_dotenv_configs(
+            [*dotenv_file_paths, dev_tools_config.env_file_path]
+        )
+    else:
+        dotenv_config = read_dotenv_configs(dotenv_file_paths)
     LOGGER.info(
         "launching development qgis for plugin %s", dev_tools_config.plugin_package_name
     )
