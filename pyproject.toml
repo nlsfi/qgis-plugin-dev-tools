@@ -1,3 +1,53 @@
+[project]
+name = "qgis-plugin-dev-tools"
+dynamic = ["version", "readme"]
+description = "QGIS plugin development and packaging tools, which make managing runtime dependencies easy."
+requires-python = ">=3.9"
+license = { text = "GNU GPL v3.0" }
+authors = [{ name = "National Land Survey of Finland", email = "os@nls.fi" }]
+keywords = ["qgis"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Build Tools",
+    "Typing :: Typed",
+]
+dependencies = [
+    "packaging>=21.0",
+    "tomli>=2.0.0",
+    "python-dotenv>=0.19.0",
+    "importlib-metadata>=4.9.0",
+    "requests>=2.27.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/nlsfi/qgis-plugin-dev-tools"
+Changelog = "https://github.com/nlsfi/qgis-plugin-dev-tools/blob/main/CHANGELOG.md"
+
+[project.scripts]
+qpdt = "qgis_plugin_dev_tools.cli:run"
+qgis-plugin-dev-tools = "qgis_plugin_dev_tools.cli:run"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.dynamic]
+version = { attr = "qgis_plugin_dev_tools.__version__" }
+readme = { file = ["README.md", "CHANGELOG.md"], content-type = "text/markdown" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+qgis_plugin_dev_tools = ["py.typed"]
+
 [tool.ruff]
 ignore = [
     "ANN101", # Missing type annotation for self in method
@@ -67,5 +117,5 @@ show_column_numbers = true
 minversion = "6.0"
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
