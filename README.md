@@ -61,6 +61,14 @@ plugin_package_name = "your_plugin_package_name"
 version_number_source = "distribution"  # or "changelog" (default if missing)
 ```
 
+Changelog path can be configured with `changelog_file_path` option. By default it is assumed to be `CHANGELOG.md` in the same directory as `pyproject.toml`.
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+changelog_file_path = "../../CHANGELOG.md"
+```
+
 QGIS plugins are required to have a LICENSE file included in the plugin package. However, usually it is more convenient to keep the license file in the root of the repository. LICENSE can be copied automatically to the plugin zip while packaging if such file is found. A relative path to the license file can also be configured with `license_file_path` option.
 
 ```toml

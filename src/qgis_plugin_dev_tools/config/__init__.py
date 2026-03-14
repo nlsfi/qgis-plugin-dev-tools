@@ -108,8 +108,10 @@ class DevToolsConfig:
             pyproject_path=pyproject_file_path.parent,
             plugin_package_name=pyproject_config.plugin_package_name,
             runtime_requires=pyproject_config.runtime_requires,
-            # TODO: allow setting path in pyproject file?
-            changelog_file_path=pyproject_file_path.parent / "CHANGELOG.md",
+            changelog_file_path=pyproject_file_path.parent
+            / pyproject_config.changelog_file_path
+            if pyproject_config.changelog_file_path
+            else pyproject_file_path.parent / "CHANGELOG.md",
             append_distributions_to_path=(
                 pyproject_config.use_dangerous_vendor_sys_path_append
             ),
