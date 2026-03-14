@@ -41,7 +41,7 @@ def start_daemon_server() -> Generator[tuple[int, Callable[[], bool]], None, Non
     # watcher.fileChanged.connect(send_something_to_socket)
 
     with SingleRequestHandlingTCPServer(("localhost", 0), BaseRequestHandler) as server:
-        _, port = server.server_address
+        _, port = server.server_address  # type: ignore[misc]
 
         def _handle_single_request_callback() -> bool:
             server.handle_request()

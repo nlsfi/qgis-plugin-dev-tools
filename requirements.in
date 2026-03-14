@@ -6,7 +6,7 @@ pytest-mock==3.7.0
 
 # linting
 pre-commit==3.4.0
-mypy==1.4.1
+mypy==1.19.1
 black==23.7.0
 ruff==0.0.292
 virtualenv==20.26.3
@@ -14,7 +14,7 @@ PyYAML==6.0.2
 typing-extensions==4.12.2
 
 # flake8 libraries not included in ruff
-flake8==6.0.0
+flake8==7.3.0
 flake8-pyproject==1.2.3
 flake8-spellcheck==0.28.0
 flake8-qgis==1.0.0
