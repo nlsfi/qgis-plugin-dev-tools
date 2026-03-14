@@ -101,6 +101,7 @@ ban-relative-imports = "all"
 max-line-length = 88
 spellcheck-targets = "names"
 dictionaries = "en_US,python,technical"
+select = ["SC", "QGS"]
 extend-ignore = [
     "E203",  # whitespace before ':'
     "E501",  # line length (checked by ruff now, possible mismatches)
