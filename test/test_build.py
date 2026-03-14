@@ -72,6 +72,7 @@ def dev_tools_config(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
         version_number_source=VersionNumberSource.CHANGELOG,
         disabled_extra_plugins=[],
         license_file_path=None,
+        env_file_path=None,
     )
 
 
@@ -91,6 +92,7 @@ def dev_tools_config_with_duplicate_dependencies(
         version_number_source=VersionNumberSource.CHANGELOG,
         disabled_extra_plugins=[],
         license_file_path=None,
+        env_file_path=None,
     )
 
 
@@ -109,6 +111,7 @@ def dev_tools_config_minimal(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig
         version_number_source=VersionNumberSource.CHANGELOG,
         disabled_extra_plugins=[],
         license_file_path=None,
+        env_file_path=None,
     )
 
 

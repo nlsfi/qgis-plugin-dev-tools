@@ -45,6 +45,7 @@ class PyprojectConfig:
     disabled_extra_plugins: list[str] = field(default_factory=list)
     license_file_path: Optional[str] = None
     changelog_file_path: Optional[str] = None
+    env_file_path: Optional[str] = None
 
     def __post_init__(self) -> None:
         if self.version_number_source not in ["changelog", "distribution"]:
