@@ -3,10 +3,11 @@ from typing import Any
 import pytest
 from importlib_metadata import distribution
 from packaging.requirements import Requirement
+
 from qgis_plugin_dev_tools.utils.distributions import get_distribution_requirements
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_dist() -> Any:
     return distribution(Requirement("pytest").name)
 

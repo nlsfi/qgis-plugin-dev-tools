@@ -2,10 +2,11 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+
 from qgis_plugin_dev_tools.config.pyproject import read_pyproject_config
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_pyproject_toml_with_contents(tmpdir: str) -> Callable[[list[str]], Path]:
     toml_file_path = Path(tmpdir) / "test.toml"
 
@@ -17,7 +18,7 @@ def create_pyproject_toml_with_contents(tmpdir: str) -> Callable[[list[str]], Pa
 
 
 def test_section_missing_fails(
-    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_pyproject_toml_with_contents(
         [
@@ -31,7 +32,7 @@ def test_section_missing_fails(
 
 
 def test_package_name_missing_fails(
-    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_pyproject_toml_with_contents(
         [
@@ -45,7 +46,7 @@ def test_package_name_missing_fails(
 
 
 def test_requires_allowed_missing(
-    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_pyproject_toml_with_contents(
         [
@@ -58,7 +59,7 @@ def test_requires_allowed_missing(
 
 
 def test_requires_allowed_empty(
-    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_pyproject_toml_with_contents(
         [
@@ -75,7 +76,7 @@ def test_requires_allowed_empty(
 
 
 def test_section_read_to_dataclass(
-    create_pyproject_toml_with_contents: Callable[[list[str]], Path]
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_pyproject_toml_with_contents(
         [

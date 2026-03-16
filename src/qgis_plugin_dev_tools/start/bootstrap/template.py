@@ -237,12 +237,12 @@ def _start_debugger(library_name: str | None, python_executable_path: Path) -> N
 
     try:
         if library_name == "debugpy":
-            import debugpy  # noqa: SC200
+            import debugpy  # noqa: SC200, T100
 
             # at least on windows qgis resets the env and sys.executable points
             # to the qgis executable, hold on to the original python to use here
             debugpy.configure(python=str(python_executable_path))  # noqa: SC200
-            debugpy.listen(("localhost", 5678))  # noqa: SC200
+            debugpy.listen(("localhost", 5678))  # noqa: SC200, T100
 
         elif library_name == "pydevd":
             import pydevd  # noqa: SC200

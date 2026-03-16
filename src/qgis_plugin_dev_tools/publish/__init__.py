@@ -64,7 +64,7 @@ def publish_plugin_zip_file(plugin_zip_file_path: Path) -> None:
             f"request returned error response {response.json().get('error')}"
         )
 
-    plugin_id, version_id = cast(dict[str, tuple[int, int]], response.json()).get(
+    plugin_id, version_id = cast("dict[str, tuple[int, int]]", response.json()).get(
         "result", (None, None)
     )
 

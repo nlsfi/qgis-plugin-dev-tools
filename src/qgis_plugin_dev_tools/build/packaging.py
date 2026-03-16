@@ -20,14 +20,14 @@
 import logging
 import shutil
 import sys
-from typing import Generator, Optional
-
-from importlib_metadata import Distribution
+from collections.abc import Generator
 from pathlib import Path
 
+from importlib_metadata import Distribution
+
 from qgis_plugin_dev_tools.build.rewrite_imports import (
-    rewrite_imports_in_source_file,
     insert_as_first_import,
+    rewrite_imports_in_source_file,
 )
 from qgis_plugin_dev_tools.config import DevToolsConfig
 from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level_names
@@ -90,7 +90,7 @@ def copy_runtime_requirements(
         if (
             vendored_distribution in dev_tools_config.extra_runtime_distributions
             and Path(
-                vendored_distribution._path,  # type: ignore
+                vendored_distribution._path,
             ).is_relative_to(Path(sys.base_prefix))
         ):
             LOGGER.warning(
@@ -184,7 +184,7 @@ def _copy_distribution_files(
         return
 
     # bundle metadata directory first
-    distribution_metadata_path = Path(distribution._path)  # type: ignore
+    distribution_metadata_path = Path(distribution._path)
     LOGGER.debug(
         "copying %s to build directory",
         distribution_metadata_path.resolve(),
@@ -233,7 +233,7 @@ def _copy_distribution_files(
         )
 
 
-def _find_existing_license_file(search_path: Path) -> Optional[Path]:
+def _find_existing_license_file(search_path: Path) -> Path | None:
     def generate_license_candidates() -> Generator[Path, None, None]:
         for base_name in ("LICENSE", "license"):
             for extension in ("", ".md", ".MD"):

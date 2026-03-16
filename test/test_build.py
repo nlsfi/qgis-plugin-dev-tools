@@ -5,11 +5,12 @@ import zipfile
 from pathlib import Path
 
 import pytest
+
 from qgis_plugin_dev_tools.build import copy_license, make_plugin_zip
 from qgis_plugin_dev_tools.config import DevToolsConfig, VersionNumberSource
 
 
-@pytest.fixture()
+@pytest.fixture
 def plugin_dir(tmp_path: Path) -> Path:
     plugin_dir = tmp_path / "Plugin"
     plugin_dir.mkdir()
@@ -58,7 +59,7 @@ def plugin_dir(tmp_path: Path) -> Path:
     return plugin_dir
 
 
-@pytest.fixture()
+@pytest.fixture
 def dev_tools_config(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
     from qgis_plugin_dev_tools.config import DevToolsConfig
 
@@ -76,7 +77,7 @@ def dev_tools_config(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dev_tools_config_with_duplicate_dependencies(
     tmp_path: Path, plugin_dir: Path
 ) -> DevToolsConfig:
@@ -96,7 +97,7 @@ def dev_tools_config_with_duplicate_dependencies(
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dev_tools_config_minimal(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
     # No python path append and not recursive deps
     from qgis_plugin_dev_tools.config import DevToolsConfig

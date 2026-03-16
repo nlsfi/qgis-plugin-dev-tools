@@ -42,8 +42,8 @@ def get_latest_changelog_sections(changelog_file_path: Path, count: int = 3) -> 
         # strip out the leading #'s and replace with dashes instead
         if line.startswith("#"):
             orig_len = len(line)
-            line = line.lstrip("#")
-            line = "".join(["-"] * (orig_len - len(line))) + line
+            line = line.lstrip("#")  # noqa: PLW2901
+            line = "".join(["-"] * (orig_len - len(line))) + line  # noqa: PLW2901
         lines.append(line)
     return "\n".join(lines).rstrip()
 

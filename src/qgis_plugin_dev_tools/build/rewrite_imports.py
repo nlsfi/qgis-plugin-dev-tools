@@ -2,8 +2,8 @@ import ast
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict
-from xml.etree import ElementTree  # noqa: SC200
+from typing import Any
+from xml.etree import ElementTree as ET
 
 
 @dataclass
@@ -16,10 +16,10 @@ class SpecialImportRewriter(ast.NodeTransformer):
     from_module: str
     to_module: str
 
-    _replaced_imported_names: Dict[str, str] = field(default_factory=dict, init=False)
+    _replaced_imported_names: dict[str, str] = field(default_factory=dict, init=False)
 
     # collect the found imported names to replace the references also
-    def visit_Import(self, node: ast.Import) -> Any:  # noqa: N802
+    def visit_Import(self, node: ast.Import) -> Any:
         for alias in node.names:
             if alias.name.startswith(f"{self.from_module}.") and alias.asname is None:
                 old_module_name = alias.name
@@ -33,7 +33,7 @@ class SpecialImportRewriter(ast.NodeTransformer):
         return node
 
     # check the attributes for an imported module name reference
-    def visit_Attribute(self, node: ast.Attribute) -> Any:  # noqa: N802
+    def visit_Attribute(self, node: ast.Attribute) -> Any:
         attribute_name = ast.unparse(node)
         if attribute_name in self._replaced_imported_names:
             replaced_name = self._replaced_imported_names[attribute_name]
@@ -42,7 +42,7 @@ class SpecialImportRewriter(ast.NodeTransformer):
         return self.generic_visit(node)
 
     # this will only handle sys.modules['something'] replace
-    def visit_Subscript(self, node: ast.Subscript) -> Any:  # noqa: N802
+    def visit_Subscript(self, node: ast.Subscript) -> Any:
         if (
             ast.unparse(node.value) == "sys.modules"
             and isinstance(node.slice, ast.Constant)
@@ -117,7 +117,7 @@ def rewrite_imports_in_source_file(
 
     # special case for custom widgets in .ui files
     if source_file.suffix == ".ui":
-        ui_tree = ElementTree.fromstring(contents)  # noqa: SC200
+        ui_tree = ET.fromstring(contents)  # noqa: SC200
         for widget_section in ui_tree.iter("customwidget"):
             header_section = widget_section.find("header")
 
@@ -130,7 +130,7 @@ def rewrite_imports_in_source_file(
             ):
                 header_section.text = f"{container_package_name}.{header_section.text}"
 
-        contents = ElementTree.tostring(  # noqa: SC200
+        contents = ET.tostring(  # noqa: SC200
             ui_tree, encoding="UTF-8", method="xml", xml_declaration=True
         ).decode("utf-8")
     else:

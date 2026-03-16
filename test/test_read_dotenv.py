@@ -3,10 +3,11 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+
 from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_dotenv_with_contents(
     tmp_path_factory,  # noqa: ANN001
 ) -> Callable[[list[str]], Path]:
@@ -19,7 +20,7 @@ def create_dotenv_with_contents(
 
 
 def test_executable_must_be_given(
-    create_dotenv_with_contents: Callable[[list[str]], Path]
+    create_dotenv_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_dotenv_with_contents(["QGIS_EXECUTABLE_PATH="])
 
@@ -28,7 +29,7 @@ def test_executable_must_be_given(
 
 
 def test_executable_must_exist(
-    create_dotenv_with_contents: Callable[[list[str]], Path]
+    create_dotenv_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_dotenv_with_contents(
         ["QGIS_EXECUTABLE_PATH=some-missing-binary"]
@@ -39,7 +40,7 @@ def test_executable_must_exist(
 
 
 def test_optionals_can_be_missing(
-    create_dotenv_with_contents: Callable[[list[str]], Path]
+    create_dotenv_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_dotenv_with_contents([f"QGIS_EXECUTABLE_PATH={sys.executable}"])
 
@@ -51,7 +52,7 @@ def test_optionals_can_be_missing(
 
 
 def test_other_vars_saved_as_runtime_env(
-    create_dotenv_with_contents: Callable[[list[str]], Path]
+    create_dotenv_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_dotenv_with_contents(
         [
@@ -70,7 +71,7 @@ def test_other_vars_saved_as_runtime_env(
 
 
 def test_empty_vars_not_saved_in_runtime_env(
-    create_dotenv_with_contents: Callable[[list[str]], Path]
+    create_dotenv_with_contents: Callable[[list[str]], Path],
 ):
     test_file = create_dotenv_with_contents(
         [
@@ -86,7 +87,7 @@ def test_empty_vars_not_saved_in_runtime_env(
 
 
 def test_multiple_files_last_overrides(
-    create_dotenv_with_contents: Callable[[list[str]], Path]
+    create_dotenv_with_contents: Callable[[list[str]], Path],
 ):
     test_file_1 = create_dotenv_with_contents(
         [
