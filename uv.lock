@@ -718,7 +718,7 @@ lint = [
     { name = "flake8-qgis", specifier = "==1.0.0" },
     { name = "flake8-spellcheck", specifier = "==0.28.0" },
     { name = "mypy", specifier = "==1.19.1" },
-    { name = "pre-commit" },
+    { name = "pre-commit", specifier = "==4.5.1" },
     { name = "pyyaml", specifier = "==6.0.2" },
     { name = "ruff", specifier = "==0.15.5" },
     { name = "types-requests", specifier = "==2.28.11.2" },

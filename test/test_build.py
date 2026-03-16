@@ -74,6 +74,10 @@ def dev_tools_config(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig:
         disabled_extra_plugins=[],
         license_file_path=None,
         env_file_path=None,
+        translation_language_codes=[],
+        translation_search_paths=[],
+        translation_destination_path=None,
+        translation_pylupdate_command=None,
     )
 
 
@@ -94,6 +98,10 @@ def dev_tools_config_with_duplicate_dependencies(
         disabled_extra_plugins=[],
         license_file_path=None,
         env_file_path=None,
+        translation_language_codes=[],
+        translation_search_paths=[],
+        translation_destination_path=None,
+        translation_pylupdate_command=None,
     )
 
 
@@ -113,6 +121,10 @@ def dev_tools_config_minimal(tmp_path: Path, plugin_dir: Path) -> DevToolsConfig
         disabled_extra_plugins=[],
         license_file_path=None,
         env_file_path=None,
+        translation_language_codes=[],
+        translation_search_paths=[],
+        translation_destination_path=None,
+        translation_pylupdate_command=None,
     )
 
 

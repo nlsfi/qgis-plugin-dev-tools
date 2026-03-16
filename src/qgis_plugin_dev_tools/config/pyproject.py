@@ -44,6 +44,10 @@ class PyprojectConfig:
     license_file_path: str | None = None
     changelog_file_path: str | None = None
     env_file_path: str | None = None
+    translation_language_codes: list[str] = field(default_factory=list)
+    translation_search_paths: list[Path] = field(default_factory=list)
+    translation_destination_path: str | None = None
+    translation_pylupdate_command: str | None = None
 
     def __post_init__(self) -> None:
         if self.version_number_source not in ["changelog", "distribution"]:
