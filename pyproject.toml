@@ -13,6 +13,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Build Tools",
@@ -44,10 +45,9 @@ dev = [
     "pytest-cov==4.1.0",
     "coverage[toml]==7.6.1",
     "pytest-mock==3.7.0",
-
 ]
 lint = [
-    "pre-commit==3.4.0",
+    "pre-commit==4.5.1",
     "mypy==1.19.1",
     "ruff==0.15.5",
     "virtualenv==20.26.3",
