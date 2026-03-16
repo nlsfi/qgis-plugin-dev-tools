@@ -35,6 +35,35 @@ Changelog = "https://github.com/nlsfi/qgis-plugin-dev-tools/blob/main/CHANGELOG.
 qpdt = "qgis_plugin_dev_tools.cli:run"
 qgis-plugin-dev-tools = "qgis_plugin_dev_tools.cli:run"
 
+
+[tool.uv]
+default-groups = ["dev", "lint"]
+
+[dependency-groups]
+dev = [
+    "pytest==6.2.5",
+    "pytest-cov==4.1.0",
+    "coverage[toml]==7.6.1",
+    "pytest-mock==3.7.0",
+
+]
+lint = [
+    "pre-commit==3.4.0",
+    "mypy==1.19.1",
+    "black==23.7.0",
+    "ruff==0.0.292",
+    "virtualenv==20.26.3",
+    "PyYAML==6.0.2",
+    "typing-extensions==4.12.2",
+    # flake8 libraries not included in ruff
+    "flake8==7.3.0",
+    "flake8-pyproject==1.2.3",
+    "flake8-spellcheck==0.28.0",
+    "flake8-qgis==1.0.0",
+    # requests types
+    "types-requests==2.28.11.2",
+]
+
 [tool.setuptools]
 package-dir = { "" = "src" }
 

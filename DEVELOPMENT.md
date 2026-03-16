@@ -2,15 +2,18 @@
 
 ## Development environment setup
 
-- Create a venv: `python -m venv .venv`
+This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/)
+to manage python packages. Make sure to have it installed first.
+
+- Create a venv: `uv venv`
   - Having access to QGIS packages with suitable executable and `--system-site-packages` flag is not strictly necessary for now, since QGIS imports are deferred and those functions are not tested
-- Install requirements: `pip install -r requirements.txt --no-deps --only-binary=:all:`
-  - `pip-sync requirements.txt` can be used if `pip-tools` is installed
-- Run tests: `pytest`
+- Install requirements: `uv sync`
+- Run tests: `uv run pytest`
 
 ## Requirements changes
 
-This project uses `pip-tools`. To update requirements, do `pip install pip-tools`, change `requirements.in` and use `pip-compile requirements.in` to generate new `requirements.txt` with fixed versions.
+This project uses `uv` with pinned requirement versions. To update requirements,
+change requirements in `pyproject.toml` and use `uv sync` to update requirements in `uv.loc` file.
 
 ## Code style
 
