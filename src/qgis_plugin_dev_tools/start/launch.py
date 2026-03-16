@@ -20,7 +20,6 @@
 import logging
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,9 +27,9 @@ LOGGER = logging.getLogger(__name__)
 def launch_qgis_with_bootstrap_script(
     qgis_executable_path: Path,
     bootstrap_script_path: Path,
-    profile_name: Optional[str],
-    locale: Optional[str],
-    ui_ini: Optional[str],
+    profile_name: str | None,
+    locale: str | None,
+    ui_ini: str | None,
 ) -> None:
     args = [
         str(qgis_executable_path),

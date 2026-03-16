@@ -1,6 +1,6 @@
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import pytest
 from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs

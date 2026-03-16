@@ -17,10 +17,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with qgis-plugin-dev-tools. If not, see <https://www.gnu.org/licenses/>.
 
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from socketserver import BaseRequestHandler, TCPServer
-from typing import Callable
 
 DAEMON_SERVER_TIMEOUT = 60
 
