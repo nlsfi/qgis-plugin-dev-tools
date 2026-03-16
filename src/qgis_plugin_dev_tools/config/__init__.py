@@ -21,7 +21,6 @@ from collections import ChainMap
 from enum import Enum, auto
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Optional
 
 from importlib_metadata import Distribution, distribution
 from packaging.requirements import Requirement
@@ -51,8 +50,8 @@ class DevToolsConfig:
     append_distributions_to_path: bool
     version_number_source: VersionNumberSource
     disabled_extra_plugins: list[str]
-    license_file_path: Optional[Path]
-    env_file_path: Optional[Path]
+    license_file_path: Path | None
+    env_file_path: Path | None
 
     def __init__(  # noqa: PLR0913
         self,
@@ -64,8 +63,8 @@ class DevToolsConfig:
         auto_add_recursive_runtime_dependencies: bool,
         version_number_source: VersionNumberSource,
         disabled_extra_plugins: list[str],
-        license_file_path: Optional[Path],
-        env_file_path: Optional[Path],
+        license_file_path: Path | None,
+        env_file_path: Path | None,
     ) -> None:
         plugin_package_spec = find_spec(plugin_package_name)
         if plugin_package_spec is None or plugin_package_spec.origin is None:

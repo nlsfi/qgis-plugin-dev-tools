@@ -21,7 +21,6 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 from importlib_metadata import entry_points
 
@@ -83,7 +82,7 @@ def start(dotenv_file_paths: list[Path]) -> None:
     )
 
 
-def build(override_plugin_version: Optional[str]) -> None:
+def build(override_plugin_version: str | None) -> None:
     # TODO: allow choosing pyproject file from cli?
     dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
     LOGGER.info("building plugin package %s", dev_tools_config.plugin_package_name)

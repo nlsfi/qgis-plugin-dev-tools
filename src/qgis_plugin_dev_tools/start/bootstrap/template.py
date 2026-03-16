@@ -26,7 +26,6 @@ import sys
 from dataclasses import asdict, dataclass
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Optional
 
 # defer qgis.* imports until necessary to avoid loading those
 # for the interpreter that launches the bootstrapping, since it
@@ -233,7 +232,7 @@ def _enable_plugin(
     reloadPlugin("plugin_reloader")
 
 
-def _start_debugger(library_name: Optional[str], python_executable_path: Path) -> None:
+def _start_debugger(library_name: str | None, python_executable_path: Path) -> None:
     from qgis.core import Qgis, QgsMessageLog
 
     try:
@@ -277,7 +276,7 @@ class BootstrapConfig:
     plugin_package_path: Path
     plugin_package_name: str
     plugin_dependency_package_names: list[str]
-    debugger_library: Optional[str]
+    debugger_library: str | None
     bootstrap_python_executable_path: Path
     extra_plugin_package_names: list[str]
 

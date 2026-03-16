@@ -20,7 +20,7 @@
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Literal
 
 import tomli
 
@@ -39,13 +39,11 @@ class PyprojectConfig:
     runtime_requires: list[str] = field(default_factory=list)
     use_dangerous_vendor_sys_path_append: bool = False
     auto_add_recursive_runtime_dependencies: bool = False
-    version_number_source: Union[
-        Literal["changelog"], Literal["distribution"]
-    ] = "changelog"
+    version_number_source: Literal["changelog"] | Literal["distribution"] = "changelog"
     disabled_extra_plugins: list[str] = field(default_factory=list)
-    license_file_path: Optional[str] = None
-    changelog_file_path: Optional[str] = None
-    env_file_path: Optional[str] = None
+    license_file_path: str | None = None
+    changelog_file_path: str | None = None
+    env_file_path: str | None = None
 
     def __post_init__(self) -> None:
         if self.version_number_source not in ["changelog", "distribution"]:

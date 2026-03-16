@@ -19,7 +19,6 @@
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 from dotenv import dotenv_values
 
@@ -32,20 +31,20 @@ class DotenvConfig:
     """
 
     QGIS_EXECUTABLE_PATH: Path
-    DEBUGGER_LIBRARY: Optional[str]
-    DEVELOPMENT_PROFILE_NAME: Optional[str]
-    QGIS_LOCALE: Optional[str]
-    QGIS_GUI_INI: Optional[str]
+    DEBUGGER_LIBRARY: str | None
+    DEVELOPMENT_PROFILE_NAME: str | None
+    QGIS_LOCALE: str | None
+    QGIS_GUI_INI: str | None
     runtime_environment: dict[str, str]
 
     def __init__(  # noqa: PLR0913
         self,
         *,
         QGIS_EXECUTABLE_PATH: str,  # noqa: N803
-        DEBUGGER_LIBRARY: Optional[str] = None,  # noqa: N803
-        DEVELOPMENT_PROFILE_NAME: Optional[str] = None,  # noqa: N803
-        QGIS_LOCALE: Optional[str] = None,  # noqa: N803
-        QGIS_GUI_INI: Optional[str] = None,  # noqa: N803
+        DEBUGGER_LIBRARY: str | None = None,  # noqa: N803
+        DEVELOPMENT_PROFILE_NAME: str | None = None,  # noqa: N803
+        QGIS_LOCALE: str | None = None,  # noqa: N803
+        QGIS_GUI_INI: str | None = None,  # noqa: N803
         **other_vars: str,
     ) -> None:
         self.QGIS_EXECUTABLE_PATH = Path(QGIS_EXECUTABLE_PATH)

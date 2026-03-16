@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import pytest
 from qgis_plugin_dev_tools.config.pyproject import read_pyproject_config

@@ -19,7 +19,7 @@
 import importlib.util
 import logging
 from importlib.machinery import SourceFileLoader
-from typing import Optional, cast
+from typing import cast
 
 import importlib_metadata
 from importlib_metadata import Distribution, distribution
@@ -69,7 +69,7 @@ def get_distribution_requirements(dist: Distribution) -> dict[str, Distribution]
                 requirement.name,
             )
             spec = importlib.util.find_spec(requirement.name)
-            loader = cast(Optional[SourceFileLoader], spec.loader) if spec else None
+            loader = cast(SourceFileLoader | None, spec.loader) if spec else None
             if spec and loader and loader.is_package(requirement.name):
                 LOGGER.error("Could not find package %s", requirement.name)
             continue
