@@ -139,25 +139,23 @@ def test_make_zip(dev_tools_config: "DevToolsConfig", tmp_path: Path):
         "_pytest",
         "attr",
         "attrs",
-        "attrs-21.4.0.dist-info",
+        "attrs-25.4.0.dist-info",
         "importlib_metadata",
-        "importlib_metadata-4.11.3.dist-info",
+        "importlib_metadata-8.7.1.dist-info",
         "iniconfig",
-        "iniconfig-1.1.1.dist-info",
+        "iniconfig-2.3.0.dist-info",
         "packaging",
-        "packaging-23.2.dist-info",
+        "packaging-26.0.dist-info",
         "pluggy",
-        "pluggy-1.0.0.dist-info",
+        "pluggy-1.6.0.dist-info",
         "py",
         "py-1.11.0.dist-info",
         "pytest",
         "pytest-6.2.5.dist-info",
         "toml",
         "toml-0.10.2.dist-info",
-        "typing_extensions-4.12.2.dist-info",
-        "typing_extensions.py",  # no top-level.txt in .dist-info, parsed from record
-        "zipp-3.8.0.dist-info",
-        "zipp.py",  # top-level.txt in .dist-info, includes zipp
+        "zipp",  #  top-level.txt in .dist-info, includes zipp
+        "zipp-3.23.0.dist-info",
     }
 
 
@@ -186,17 +184,17 @@ def test_make_zip_with_duplicate_dependencies(
         "_pytest",
         "attr",
         "attrs",
-        "attrs-21.4.0.dist-info",
+        "attrs-25.4.0.dist-info",
         "coverage",
         "coverage-7.6.1.dist-info",
         "importlib_metadata",
-        "importlib_metadata-4.11.3.dist-info",
+        "importlib_metadata-8.7.1.dist-info",
         "iniconfig",
-        "iniconfig-1.1.1.dist-info",
+        "iniconfig-2.3.0.dist-info",
         "packaging",
-        "packaging-23.2.dist-info",
+        "packaging-26.0.dist-info",
         "pluggy",
-        "pluggy-1.0.0.dist-info",
+        "pluggy-1.6.0.dist-info",
         "py",
         "py-1.11.0.dist-info",
         "pytest",
@@ -205,10 +203,8 @@ def test_make_zip_with_duplicate_dependencies(
         "pytest_cov-4.1.0.dist-info",
         "toml",
         "toml-0.10.2.dist-info",
-        "typing_extensions-4.12.2.dist-info",
-        "typing_extensions.py",  # no top-level.txt in .dist-info, parsed from record
-        "zipp-3.8.0.dist-info",
-        "zipp.py",  # top-level.txt in .dist-info, includes zipp
+        "zipp",
+        "zipp-3.23.0.dist-info",
     }
 
 
