@@ -49,7 +49,7 @@ dev = [
 lint = [
     "pre-commit==3.4.0",
     "mypy==1.19.1",
-    "ruff==0.0.292",
+    "ruff==0.15.5",
     "virtualenv==20.26.3",
     "PyYAML==6.0.2",
     "typing-extensions==4.12.2",
@@ -76,13 +76,18 @@ where = ["src"]
 qgis_plugin_dev_tools = ["py.typed"]
 
 [tool.ruff]
-ignore = [
-    "ANN101", # Missing type annotation for self in method
-    ]
+target-version = "py310"
 line-length = 88
 
+lint.ignore = [
+    "ANN101", # Missing type annotation for self in method
+    "PLC0415", # Import should be at the top-level of a file
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
+    ]
+
+
 # List of all rules https://docs.astral.sh/ruff/rules/
-select = [
+lint.select = [
     "ANN", # flake8-annotations
     "B", # flake8-bugbear
     "C", # flake8-comprehensions
@@ -108,20 +113,21 @@ select = [
 
 # Avoiding flagging (and removing) `SC200` from any `# noqa`
 # directives, despite Ruff's lack of support for `flake8-spellcheck`.
-external = ["SC200"]
+lint.external = ["SC200"]
 
-target-version = "py312"
-
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "test*" = [
     "INP001",
     "ANN201", # Missing return type annotation for public function
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
     "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
     ]
+".github/workflows/*" = [
+    "ALL"
+]
 
 
 [tool.flake8]
