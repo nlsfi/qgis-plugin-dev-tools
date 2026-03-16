@@ -52,6 +52,10 @@ class DevToolsConfig:
     disabled_extra_plugins: list[str]
     license_file_path: Path | None
     env_file_path: Path | None
+    translation_language_codes: list[str]
+    translation_search_paths: list[Path]
+    translation_destination_path: Path | None
+    translation_pylupdate_command: str | None
 
     def __init__(  # noqa: PLR0913
         self,
@@ -65,6 +69,10 @@ class DevToolsConfig:
         disabled_extra_plugins: list[str],
         license_file_path: Path | None,
         env_file_path: Path | None,
+        translation_language_codes: list[str],
+        translation_search_paths: list[Path],
+        translation_destination_path: Path | None,
+        translation_pylupdate_command: str | None,
     ) -> None:
         plugin_package_spec = find_spec(plugin_package_name)
         if plugin_package_spec is None or plugin_package_spec.origin is None:
@@ -86,6 +94,10 @@ class DevToolsConfig:
         self.disabled_extra_plugins = disabled_extra_plugins
         self.license_file_path = license_file_path
         self.env_file_path = env_file_path
+        self.translation_language_codes = translation_language_codes
+        self.translation_search_paths = translation_search_paths
+        self.translation_destination_path = translation_destination_path
+        self.translation_pylupdate_command = translation_pylupdate_command
 
         if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
@@ -131,4 +143,14 @@ class DevToolsConfig:
             env_file_path=pyproject_file_path.parent / pyproject_config.env_file_path
             if pyproject_config.env_file_path
             else None,
+            translation_language_codes=pyproject_config.translation_language_codes,
+            translation_search_paths=[
+                pyproject_file_path.parent / search_path
+                for search_path in pyproject_config.translation_search_paths
+            ],
+            translation_destination_path=pyproject_file_path.parent
+            / pyproject_config.translation_destination_path
+            if pyproject_config.translation_destination_path
+            else None,
+            translation_pylupdate_command=pyproject_config.translation_pylupdate_command,
         )

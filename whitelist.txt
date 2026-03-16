@@ -35,3 +35,4 @@ optionstr
 ui
 vendored
 etree
+pylupdate
