@@ -21,6 +21,5 @@ def test_get_distribution_requirements(sample_dist: Any):
         "pluggy",
         "py",
         "toml",
-        "typing-extensions",
         "zipp",
     ]
