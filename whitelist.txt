@@ -34,3 +34,4 @@ base64
 optionstr
 ui
 vendored
+etree

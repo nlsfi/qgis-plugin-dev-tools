@@ -22,7 +22,6 @@ import os
 import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 from qgis_plugin_dev_tools.build.changelog_parser import (
     get_latest_changelog_sections,
@@ -33,9 +32,9 @@ from qgis_plugin_dev_tools.build.distribution import (
 )
 from qgis_plugin_dev_tools.build.metadata import update_metadata_file
 from qgis_plugin_dev_tools.build.packaging import (
+    copy_license,
     copy_plugin_code,
     copy_runtime_requirements,
-    copy_license,
 )
 from qgis_plugin_dev_tools.config import DevToolsConfig, VersionNumberSource
 
@@ -57,7 +56,7 @@ def _infer_version_from_source_files(dev_tools_config: DevToolsConfig) -> str:
 def make_plugin_zip(
     dev_tools_config: DevToolsConfig,
     target_directory_path: Path,
-    override_plugin_version: Optional[str] = None,
+    override_plugin_version: str | None = None,
 ) -> None:
     # TODO: make setuptools wrapper and use this code when creating the sdist/wheel?
 

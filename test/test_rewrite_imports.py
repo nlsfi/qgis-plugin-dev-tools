@@ -1,5 +1,5 @@
 from pathlib import Path
-from xml.etree import ElementTree
+from xml.etree import ElementTree as ET
 
 from qgis_plugin_dev_tools.build.rewrite_imports import rewrite_imports_in_source_file
 
@@ -126,7 +126,7 @@ def test_ui_file_custom_widget_imports_are_replaced(tmp_path: Path):
     rewrite_imports_in_source_file(file, "xyz", "container.package")
 
     # validate xml by reading it
-    ui_tree = ElementTree.fromstring(file.read_text())
+    ui_tree = ET.fromstring(file.read_text())
     for index, widget_section in enumerate(ui_tree.iter("customwidget")):
         header_section = widget_section.find("header")
         assert header_section is not None

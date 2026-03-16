@@ -37,7 +37,7 @@ class DotenvConfig:
     QGIS_GUI_INI: str | None
     runtime_environment: dict[str, str]
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         *,
         QGIS_EXECUTABLE_PATH: str,  # noqa: N803

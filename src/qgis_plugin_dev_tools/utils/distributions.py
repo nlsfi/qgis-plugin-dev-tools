@@ -18,12 +18,15 @@
 #  along with qgis-plugin-dev-tools. If not, see <https://www.gnu.org/licenses/>.
 import importlib.util
 import logging
-from importlib.machinery import SourceFileLoader
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import importlib_metadata
 from importlib_metadata import Distribution, distribution
 from packaging.requirements import Requirement
+
+if TYPE_CHECKING:
+    from importlib.machinery import SourceFileLoader
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -69,7 +72,7 @@ def get_distribution_requirements(dist: Distribution) -> dict[str, Distribution]
                 requirement.name,
             )
             spec = importlib.util.find_spec(requirement.name)
-            loader = cast(SourceFileLoader | None, spec.loader) if spec else None
+            loader = cast("SourceFileLoader | None", spec.loader) if spec else None
             if spec and loader and loader.is_package(requirement.name):
                 LOGGER.error("Could not find package %s", requirement.name)
             continue
