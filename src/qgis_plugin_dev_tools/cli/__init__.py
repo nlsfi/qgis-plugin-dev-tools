@@ -102,7 +102,7 @@ def publish(plugin_zip_file_path: Path) -> None:
     publish_plugin_zip_file(plugin_zip_file_path)
 
 
-def transup() -> None:
+def transup(check_changes: bool) -> None:
     dev_tools_config = _get_dev_tools_config()
     if not (language_codes := dev_tools_config.translation_language_codes):
         LOGGER.warning("No language codes configured")
@@ -120,6 +120,7 @@ def transup() -> None:
         search_paths,
         destination_path,
         dev_tools_config.translation_pylupdate_command,
+        check_changes,
     )
 
 
@@ -129,7 +130,7 @@ def _get_dev_tools_config() -> DevToolsConfig:
     return dev_tools_config
 
 
-parser = argparse.ArgumentParser(description="QGcd IS plugin dev tools cli")
+parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
 
 common_parser = argparse.ArgumentParser(add_help=False)
 common_parser.add_argument(
@@ -191,6 +192,13 @@ transup_parser = commands.add_parser(
     help="search for new strings to be translated and update ts files",
     parents=[common_parser],
 )
+transup_parser.add_argument(
+    "--check-changes",
+    action="store_true",
+    dest="check_changes",
+    help="update ts files only if they would "
+    "contain unfinished or removed translations",
+)
 
 
 def run() -> None:
@@ -214,6 +222,7 @@ def run() -> None:
         plugin_zip_file_path = result["file"]
         publish(plugin_zip_file_path)
     elif result.get("subcommand") in ["transup"]:
-        transup()
+        check_changes = result.get("check_changes", False)
+        transup(check_changes)
     else:
         parser.print_usage()

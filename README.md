@@ -89,6 +89,31 @@ Run `qgis-plugin-dev-tools publish <file>` (short `qpdt publish <file>`) to publ
 
 By default username and password are read from `QPDT_PUBLISH_USERNAME` and `QPDT_PUBLISH_PASSWORD` environment variables.
 
+## Updating translations
+
+Run `qgis-plugin-dev-tools transup` (short `qpdt ts`) to creat or update ts files for translating the plugin. This command can be configured with:
+
+```toml
+[tool.qgis_plugin_dev_tools]
+plugin_package_name = "your_plugin_package_name"
+translation_language_codes = [
+    "fi",
+]
+translation_search_paths = [
+    "src/your_plugin_package_name"
+]
+translation_destination_path = "src/your_plugin_package_name/resources/i18n"
+# translation_pylupdate_command = "/usr/bin/pylupdate6" # Override of pylupdate5 command
+```
+
+By default, on Windows translation uses python script `PyQt5.pylupdate_main` and on other platforms `pylupdate5` or `pylupdate6` executable.
+
+### Updating translations only when there are changes
+
+If you want to update translation files only if there are new strings to be translated, you can use `qpdt transup --check-changes` (short `qpdt ts --check-changes`).
+This flag omits all the line number and refactoring changes in the translation files, since it won't affect how translations work.
+This is useful if used together with tools like `pre-commit`.
+
 ## Plugin development mode
 
 Run `qgis-plugin-dev-tools start` (short `qpdt s`) to launch QGIS with the plugin installed and ready for development.

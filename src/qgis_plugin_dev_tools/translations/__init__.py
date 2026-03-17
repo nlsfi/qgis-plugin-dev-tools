@@ -1,7 +1,12 @@
 import logging
+import shutil
+import tempfile
 from pathlib import Path
 
-from qgis_plugin_dev_tools.translations.update_translations import update_ts_file
+from qgis_plugin_dev_tools.translations.update_translations import (
+    get_unfinished_translations_count,
+    update_ts_file,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -11,6 +16,7 @@ def update_translation_files(
     search_paths: list[Path],
     destination_path: Path,
     pylupdate_command: str | None,
+    check_changes: bool,
 ) -> None:
     py_files = []
     ui_files = []
@@ -23,4 +29,24 @@ def update_translation_files(
 
     for language_code in language_codes:
         ts_file = destination_path / f"{language_code}.ts"
-        update_ts_file(translatable_files, ts_file, pylupdate_command)
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".ts") as temp_file:
+            backup_ts_file: Path | None = None
+            if check_changes and ts_file.exists():
+                backup_ts_file = Path(temp_file.name)
+                initial_unfinished_count = get_unfinished_translations_count(ts_file)
+                shutil.copy(ts_file, backup_ts_file)
+
+            update_ts_file(translatable_files, ts_file, pylupdate_command)
+
+            if backup_ts_file is None:
+                LOGGER.info("Updated translations in %s", ts_file)
+                continue
+
+            # Move the original back if there changes
+            new_unfinished_count = get_unfinished_translations_count(ts_file)
+            if new_unfinished_count == initial_unfinished_count:
+                LOGGER.debug("No relevant changes in %s, restoring backup", ts_file)
+                shutil.copy(backup_ts_file, ts_file)
+            else:
+                LOGGER.info("Updated translations in %s", ts_file)

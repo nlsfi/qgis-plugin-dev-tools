@@ -14,6 +14,7 @@ def update_ts_file(
     ts_output_file_path: Path,
     pylupdate_command: str | None,
 ) -> None:
+    """Update ts file with newest changes."""
     if os.name == "nt":
         ensure_pylupdate_main()
         args = [
@@ -43,7 +44,7 @@ def update_ts_file(
             "-ts",
             str(ts_output_file_path),
         ]
-        LOGGER.info("Updating ts-file %s...", ts_output_file_path)
+        LOGGER.debug("Updating ts-file %s...", ts_output_file_path)
         run_command(args)
 
 
@@ -95,7 +96,6 @@ def find_pylupdate() -> str:
     raise FileNotFoundError("Could not find pylupdate (Qt5/Qt6). Set PYLUPDATE_PATH.")
 
 
-def get_unfinished_string_count(ts_file: Path) -> int:
-    """Get the number of unfinished strings in the ts-file."""
-    data = ts_file.read_text(encoding="utf-8")
-    return data.count('<translation type="unfinished">')
+def get_unfinished_translations_count(ts_file: Path) -> int:
+    """Get the translation statistics of a file."""
+    return ts_file.read_text(encoding="utf-8").count('<translation type="unfinished">')

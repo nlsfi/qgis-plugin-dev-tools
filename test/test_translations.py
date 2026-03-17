@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -51,6 +52,7 @@ def test_update_translation_files_collects_files(
         search_paths=[project_dir],
         destination_path=i18n_dir,
         pylupdate_command=None,
+        check_changes=False,
     )
 
     assert mock_update.call_count == 2
@@ -93,12 +95,52 @@ def test_update_translation_files_multiple_search_paths(
         search_paths=[dir1, dir2],
         destination_path=i18n_dir,
         pylupdate_command=None,
+        check_changes=False,
     )
 
     translatable_files = mock_update.call_args[0][0]
     assert len(translatable_files) == 2
     assert any("file1.py" in str(f) for f in translatable_files)
     assert any("file2.py" in str(f) for f in translatable_files)
+
+
+@pytest.mark.parametrize(("initial_unfinished_count"), [0, 1])
+@pytest.mark.parametrize(("new_unfinished_count"), [0, 1])
+def test_update_translation_files_should_check_unfinished_lines(
+    translation_project: tuple[Path, Path, Path],
+    mocker: MockerFixture,
+    initial_unfinished_count: int,
+    new_unfinished_count: int,
+) -> None:
+    project_dir, _, i18n_dir = translation_project
+
+    (i18n_dir / "en.ts").touch()
+
+    mock_update = mocker.patch("qgis_plugin_dev_tools.translations.update_ts_file")
+    mocker.patch(
+        "qgis_plugin_dev_tools.translations.get_unfinished_translations_count",
+        side_effect=[initial_unfinished_count, new_unfinished_count],
+    )
+
+    spy_shutil = mocker.spy(shutil, "copy")
+    update_translation_files(
+        language_codes=["en"],
+        search_paths=[project_dir],
+        destination_path=i18n_dir,
+        pylupdate_command=None,
+        check_changes=True,
+    )
+
+    mock_update.assert_called_once()
+
+    # Original is copied for a backup
+    expected_call_count = 1
+
+    if new_unfinished_count == initial_unfinished_count:
+        # Backup is copied back
+        expected_call_count += 1
+
+    assert spy_shutil.call_count == expected_call_count
 
 
 def test_run_command_success(mocker: MockerFixture) -> None:
