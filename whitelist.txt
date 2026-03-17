@@ -36,3 +36,5 @@ ui
 vendored
 etree
 pylupdate
+transup
+qt5
