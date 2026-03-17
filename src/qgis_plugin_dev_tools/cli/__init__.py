@@ -31,14 +31,14 @@ from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
 from qgis_plugin_dev_tools.publish import publish_plugin_zip_file
 from qgis_plugin_dev_tools.start import launch_development_qgis
 from qgis_plugin_dev_tools.start.config import DevelopmentModeConfig
+from qgis_plugin_dev_tools.translations import update_translation_files
 from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level_names
 
 LOGGER = logging.getLogger(__name__)
 
 
 def start(dotenv_file_paths: list[Path]) -> None:
-    # TODO: allow choosing pyproject file from cli?
-    dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
+    dev_tools_config = _get_dev_tools_config()
     # TODO: allow setting debugger flag from cli?
     # TODO: find default executable paths to allow zero-config .env?
     # TODO: rglob('metadata.txt') from cwd to allow zero-config pyproject.toml?
@@ -83,8 +83,7 @@ def start(dotenv_file_paths: list[Path]) -> None:
 
 
 def build(override_plugin_version: str | None) -> None:
-    # TODO: allow choosing pyproject file from cli?
-    dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
+    dev_tools_config = _get_dev_tools_config()
     LOGGER.info("building plugin package %s", dev_tools_config.plugin_package_name)
     LOGGER.debug(
         "building plugin package from %s",
@@ -103,7 +102,34 @@ def publish(plugin_zip_file_path: Path) -> None:
     publish_plugin_zip_file(plugin_zip_file_path)
 
 
-parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
+def transup() -> None:
+    dev_tools_config = _get_dev_tools_config()
+    if not (language_codes := dev_tools_config.translation_language_codes):
+        LOGGER.warning("No language codes configured")
+        return
+
+    if not (search_paths := dev_tools_config.translation_search_paths):
+        LOGGER.warning("No search paths configured")
+        return
+
+    if not (destination_path := dev_tools_config.translation_destination_path):
+        LOGGER.warning("No destination path configured")
+        return
+    update_translation_files(
+        language_codes,
+        search_paths,
+        destination_path,
+        dev_tools_config.translation_pylupdate_command,
+    )
+
+
+def _get_dev_tools_config() -> DevToolsConfig:
+    # TODO: allow choosing pyproject file from cli?
+    dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
+    return dev_tools_config
+
+
+parser = argparse.ArgumentParser(description="QGcd IS plugin dev tools cli")
 
 common_parser = argparse.ArgumentParser(add_help=False)
 common_parser.add_argument(
@@ -159,6 +185,13 @@ publish_parser.add_argument(
     help="zip file to publish",
 )
 
+transup_parser = commands.add_parser(
+    "transup",
+    aliases=["ts"],
+    help="search for new strings to be translated and update ts files",
+    parents=[common_parser],
+)
+
 
 def run() -> None:
     result = vars(parser.parse_args())
@@ -180,6 +213,7 @@ def run() -> None:
     elif result.get("subcommand") in ["publish"]:
         plugin_zip_file_path = result["file"]
         publish(plugin_zip_file_path)
-
+    elif result.get("subcommand") in ["transup"]:
+        transup()
     else:
         parser.print_usage()

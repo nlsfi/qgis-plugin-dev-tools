@@ -113,7 +113,7 @@ lint.select = [
 
 # Avoiding flagging (and removing) `SC200` from any `# noqa`
 # directives, despite Ruff's lack of support for `flake8-spellcheck`.
-lint.external = ["SC200"]
+lint.external = ["SC200", "QGS"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
