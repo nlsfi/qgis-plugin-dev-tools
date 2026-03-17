@@ -165,6 +165,19 @@ disabled_extra_plugins = [
 ]
 ```
 
+## Use with pre-commit
+
+Some of the qgis-plugin-dev-tools commands are exposed as pre-commit hooks to be run with tools like pre-commit and prek.
+workflow, add something like the below to the `repos` list in the project's `.pre-commit-config.yaml`:
+
+```yaml
+- repo: https://github.com/nlsfi/qgis-plugin-dev-tools
+  rev: 0.11.0
+  hooks:
+  - id: update-translations # runs "qgis-plugin-dev-tools transup" command
+    # args: ["--pyproject-toml", "path/to/pyproject.toml"] # optionally give path to pyproject.toml
+```
+
 ## Development of qgis-plugin-dev-tools
 
 See [development readme](./DEVELOPMENT.md).
