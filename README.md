@@ -188,6 +188,10 @@ workflow, add something like the below to the `repos` list in the project's `.pr
 
 ```
 
+There are also docker versions available for each hook to be used in CI where necessary Qt libraries might not be available:
+
+* `update-translations-docker`
+
 ## Development of qgis-plugin-dev-tools
 
 See [development readme](./DEVELOPMENT.md).

@@ -7,3 +7,13 @@
   args: ["--check-changes"]
   require_serial: true
   pass_filenames: false
+
+- id: update-translations-docker
+  name: update translations
+  description: Ensures all the ts files are up to date.
+  entry: ghcr.io/nlsfi/qgis-plugin-dev-tools:latest transup
+  language: docker_image
+  files: \.(py|ui)$
+  args: ["--check-changes"]
+  require_serial: true
+  pass_filenames: false
