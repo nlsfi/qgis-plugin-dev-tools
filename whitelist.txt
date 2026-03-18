@@ -38,3 +38,4 @@ etree
 pylupdate
 transup
 qt5
+transcompile

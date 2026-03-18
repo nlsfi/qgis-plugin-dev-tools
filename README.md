@@ -114,6 +114,11 @@ If you want to update translation files only if there are new strings to be tran
 This flag omits all the line number and refactoring changes in the translation files, since it won't affect how translations work.
 This is useful if used together with tools like `pre-commit`.
 
+## Compiling translations
+
+Run `qgis-plugin-dev-tools transcompile` (short `qpdt tc`) to compile ts files into qm files that can be used the plugin.
+This command reads the same configuration as `transup` command.
+
 ## Plugin development mode
 
 Run `qgis-plugin-dev-tools start` (short `qpdt s`) to launch QGIS with the plugin installed and ready for development.

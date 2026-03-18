@@ -25,13 +25,13 @@ from pathlib import Path
 from importlib_metadata import entry_points
 
 from qgis_plugin_dev_tools import LOGGER as ROOT_LOGGER
+from qgis_plugin_dev_tools import translations
 from qgis_plugin_dev_tools.build import make_plugin_zip
 from qgis_plugin_dev_tools.config import DevToolsConfig
 from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
 from qgis_plugin_dev_tools.publish import publish_plugin_zip_file
 from qgis_plugin_dev_tools.start import launch_development_qgis
 from qgis_plugin_dev_tools.start.config import DevelopmentModeConfig
-from qgis_plugin_dev_tools.translations import update_translation_files
 from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level_names
 
 LOGGER = logging.getLogger(__name__)
@@ -115,13 +115,24 @@ def transup(check_changes: bool) -> None:
     if not (destination_path := dev_tools_config.translation_destination_path):
         LOGGER.warning("No destination path configured")
         return
-    update_translation_files(
+    translations.update_translation_files(
         language_codes,
         search_paths,
         destination_path,
         dev_tools_config.translation_pylupdate_command,
         check_changes,
     )
+
+
+def transcompile() -> None:
+    dev_tools_config = _get_dev_tools_config()
+    if not (language_codes := dev_tools_config.translation_language_codes):
+        LOGGER.warning("No language codes configured")
+        return
+    if not (destination_path := dev_tools_config.translation_destination_path):
+        LOGGER.warning("No destination path configured")
+        return
+    translations.compile_translations(language_codes, destination_path)
 
 
 def _get_dev_tools_config() -> DevToolsConfig:
@@ -200,6 +211,13 @@ transup_parser.add_argument(
     "contain unfinished or removed translations",
 )
 
+transcompile_parser = commands.add_parser(
+    "transcompile",
+    aliases=["tc"],
+    help="compile ts files into binary qm files",
+    parents=[common_parser],
+)
+
 
 def run() -> None:
     result = vars(parser.parse_args())
@@ -221,8 +239,10 @@ def run() -> None:
     elif result.get("subcommand") in ["publish"]:
         plugin_zip_file_path = result["file"]
         publish(plugin_zip_file_path)
-    elif result.get("subcommand") in ["transup"]:
+    elif result.get("subcommand") in ["transup", "ts"]:
         check_changes = result.get("check_changes", False)
         transup(check_changes)
+    elif result.get("subcommand") in ["transcompile", "tc"]:
+        transcompile()
     else:
         parser.print_usage()

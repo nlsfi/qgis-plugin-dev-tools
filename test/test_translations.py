@@ -7,6 +7,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from qgis_plugin_dev_tools.translations import (
+    compile_translations,
     update_translation_files,
 )
 from qgis_plugin_dev_tools.translations.update_translations import (
@@ -307,3 +308,16 @@ def test_update_ts_file_windows(tmp_path: Path, mocker: MockerFixture) -> None:
     mock_run.assert_called_once()
     written_content = mock_write.call_args[0][0]
     assert "PyQt5.pylupdate_main" in written_content
+
+
+def test_compile_translations(tmp_path: Path, mocker: MockerFixture) -> None:
+    ts_file = tmp_path / "test.ts"
+    ts_file.touch()
+
+    mock_run = mocker.patch("qgis_plugin_dev_tools.translations.run_command")
+
+    compile_translations(["test"], tmp_path)
+
+    mock_run.assert_called_once_with(
+        ["lrelease", str(ts_file), "-qm", str(ts_file.with_name("test.qm"))]
+    )
