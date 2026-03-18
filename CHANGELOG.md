@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Unreleased
 
 - Feat: Add command to update translations
+- Feat: Add command to compile translation files
 
 ## [0.10.0] - 2026-03-14
 
