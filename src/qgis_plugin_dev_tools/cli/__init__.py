@@ -37,8 +37,8 @@ from qgis_plugin_dev_tools.utils.distributions import get_distribution_top_level
 LOGGER = logging.getLogger(__name__)
 
 
-def start(dotenv_file_paths: list[Path]) -> None:
-    dev_tools_config = _get_dev_tools_config()
+def start(pyproject_config_path: Path, dotenv_file_paths: list[Path]) -> None:
+    dev_tools_config = DevToolsConfig.from_pyproject_config(pyproject_config_path)
     # TODO: allow setting debugger flag from cli?
     # TODO: find default executable paths to allow zero-config .env?
     # TODO: rglob('metadata.txt') from cwd to allow zero-config pyproject.toml?
@@ -82,8 +82,8 @@ def start(dotenv_file_paths: list[Path]) -> None:
     )
 
 
-def build(override_plugin_version: str | None) -> None:
-    dev_tools_config = _get_dev_tools_config()
+def build(pyproject_config_path: Path, override_plugin_version: str | None) -> None:
+    dev_tools_config = DevToolsConfig.from_pyproject_config(pyproject_config_path)
     LOGGER.info("building plugin package %s", dev_tools_config.plugin_package_name)
     LOGGER.debug(
         "building plugin package from %s",
@@ -102,8 +102,8 @@ def publish(plugin_zip_file_path: Path) -> None:
     publish_plugin_zip_file(plugin_zip_file_path)
 
 
-def transup(check_changes: bool) -> None:
-    dev_tools_config = _get_dev_tools_config()
+def transup(pyproject_config_path: Path, check_changes: bool) -> None:
+    dev_tools_config = DevToolsConfig.from_pyproject_config(pyproject_config_path)
     if not (language_codes := dev_tools_config.translation_language_codes):
         LOGGER.warning("No language codes configured")
         return
@@ -124,8 +124,8 @@ def transup(check_changes: bool) -> None:
     )
 
 
-def transcompile() -> None:
-    dev_tools_config = _get_dev_tools_config()
+def transcompile(pyproject_config_path: Path) -> None:
+    dev_tools_config = DevToolsConfig.from_pyproject_config(pyproject_config_path)
     if not (language_codes := dev_tools_config.translation_language_codes):
         LOGGER.warning("No language codes configured")
         return
@@ -133,12 +133,6 @@ def transcompile() -> None:
         LOGGER.warning("No destination path configured")
         return
     translations.compile_translations(language_codes, destination_path)
-
-
-def _get_dev_tools_config() -> DevToolsConfig:
-    # TODO: allow choosing pyproject file from cli?
-    dev_tools_config = DevToolsConfig.from_pyproject_config(Path("pyproject.toml"))
-    return dev_tools_config
 
 
 parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")
@@ -149,6 +143,15 @@ common_parser.add_argument(
     "--verbose",
     action="store_true",
     help="use debug logging level",
+)
+common_parser.add_argument(
+    "-p",
+    "--pyproject-toml",
+    metavar="<file>",
+    dest="pyproject_config_path",
+    type=Path,
+    default=Path("pyproject.toml"),
+    help="path to pyproject.toml file if not in current directory",
 )
 
 commands = parser.add_subparsers(required=True, dest="subcommand")
@@ -226,23 +229,26 @@ def run() -> None:
 
     LOGGER.debug(f"parsed cli args {result}")
 
+    pyproject_config_path = result["pyproject_config_path"].resolve()
+    LOGGER.debug("pyproject.toml path: %s", pyproject_config_path)
+
     if result.get("subcommand") in ["start", "s"]:
         dotenv_file_paths = [Path(".env")] + [
             Path(f) for f in result.get("extra_dotenv_files", [])
         ]
-        start(dotenv_file_paths)
+        start(pyproject_config_path, dotenv_file_paths)
 
     elif result.get("subcommand") in ["build", "b"]:
         override_plugin_version = result.get("plugin_version", None)
-        build(override_plugin_version)
+        build(pyproject_config_path, override_plugin_version)
 
     elif result.get("subcommand") in ["publish"]:
         plugin_zip_file_path = result["file"]
         publish(plugin_zip_file_path)
     elif result.get("subcommand") in ["transup", "ts"]:
         check_changes = result.get("check_changes", False)
-        transup(check_changes)
+        transup(pyproject_config_path, check_changes)
     elif result.get("subcommand") in ["transcompile", "tc"]:
-        transcompile()
+        transcompile(pyproject_config_path)
     else:
         parser.print_usage()
