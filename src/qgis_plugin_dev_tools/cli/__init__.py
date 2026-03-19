@@ -19,6 +19,7 @@
 
 import argparse
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -262,6 +263,11 @@ def run() -> None:
         check_changes = result.get("check_changes", False)
         transup(pyproject_config_path, check_changes)
     elif result.get("subcommand") in ["transcompile", "tc"]:
+        if os.name == "nt":
+            LOGGER.warning(
+                "transcompile command might not work on Windows at the moment. "
+                "Use linguist.exe to compile translations."
+            )
         transcompile(pyproject_config_path)
     else:
         parser.print_usage()

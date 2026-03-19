@@ -118,6 +118,9 @@ This is useful if used together with tools like `pre-commit`.
 Run `qgis-plugin-dev-tools transcompile` (short `qpdt tc`) to compile ts files into qm files that can be used the plugin.
 This command reads the same configuration as `transup` command.
 
+> [!WARNING]
+> Usually "lrelease" binary does not ship on Windows when installing QGIS. In that case use Qt-linguiest (linguist.exe) to compile translations.
+
 ## Plugin development mode
 
 Run `qgis-plugin-dev-tools start` (short `qpdt s`) to launch QGIS with the plugin installed and ready for development.
