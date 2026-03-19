@@ -20,7 +20,7 @@
 import logging
 import sys
 
-__version__ = "0.11.0.post0"
+__version__ = "0.12.0"
 
 LOGGER = logging.getLogger(__name__)
 _handler = logging.StreamHandler(sys.stdout)
