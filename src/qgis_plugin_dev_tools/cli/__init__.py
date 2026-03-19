@@ -27,7 +27,7 @@ from importlib_metadata import entry_points
 from qgis_plugin_dev_tools import LOGGER as ROOT_LOGGER
 from qgis_plugin_dev_tools import translations
 from qgis_plugin_dev_tools.build import make_plugin_zip
-from qgis_plugin_dev_tools.config import DevToolsConfig
+from qgis_plugin_dev_tools.config import DevToolsConfig, pyproject
 from qgis_plugin_dev_tools.config.dotenv import read_dotenv_configs
 from qgis_plugin_dev_tools.publish import publish_plugin_zip_file
 from qgis_plugin_dev_tools.start import launch_development_qgis
@@ -103,36 +103,49 @@ def publish(plugin_zip_file_path: Path) -> None:
 
 
 def transup(pyproject_config_path: Path, check_changes: bool) -> None:
-    dev_tools_config = DevToolsConfig.from_pyproject_config(pyproject_config_path)
-    if not (language_codes := dev_tools_config.translation_language_codes):
+    # Do not create DevToolsConfig since this command does not need plugin_package
+    pyproject_config = pyproject.read_pyproject_config(pyproject_config_path)
+    if not (language_codes := pyproject_config.translation_language_codes):
         LOGGER.warning("No language codes configured")
         return
 
-    if not (search_paths := dev_tools_config.translation_search_paths):
+    if not (search_path_strings := pyproject_config.translation_search_paths):
         LOGGER.warning("No search paths configured")
         return
+    search_paths = [Path(search_path) for search_path in search_path_strings]
+    if any(search_path for search_path in search_paths if not search_path.exists()):
+        LOGGER.warning("One or more search paths does not exist")
+        return
 
-    if not (destination_path := dev_tools_config.translation_destination_path):
+    if not (destination := pyproject_config.translation_destination_path):
         LOGGER.warning("No destination path configured")
         return
+    if not ((destination_path := Path(destination)).exists()):
+        LOGGER.warning("Destination path %s does not exist", destination_path)
+        return
+
     translations.update_translation_files(
         language_codes,
         search_paths,
         destination_path,
-        dev_tools_config.translation_pylupdate_command,
+        pyproject_config.translation_pylupdate_command,
         check_changes,
     )
 
 
 def transcompile(pyproject_config_path: Path) -> None:
-    dev_tools_config = DevToolsConfig.from_pyproject_config(pyproject_config_path)
-    if not (language_codes := dev_tools_config.translation_language_codes):
+    # Do not create DevToolsConfig since this command does not need plugin_package
+    pyproject_config = pyproject.read_pyproject_config(pyproject_config_path)
+    if not (language_codes := pyproject_config.translation_language_codes):
         LOGGER.warning("No language codes configured")
         return
-    if not (destination_path := dev_tools_config.translation_destination_path):
+    if not (destination := pyproject_config.translation_destination_path):
         LOGGER.warning("No destination path configured")
         return
-    translations.compile_translations(language_codes, destination_path)
+    if not ((destination_path := Path(destination)).exists()):
+        LOGGER.warning("Destination path %s does not exist", destination_path)
+        return
+    translations.compile_translations(language_codes, Path(destination_path))
 
 
 parser = argparse.ArgumentParser(description="QGIS plugin dev tools cli")

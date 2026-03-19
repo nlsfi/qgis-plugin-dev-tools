@@ -95,7 +95,6 @@ Run `qgis-plugin-dev-tools transup` (short `qpdt ts`) to creat or update ts file
 
 ```toml
 [tool.qgis_plugin_dev_tools]
-plugin_package_name = "your_plugin_package_name"
 translation_language_codes = [
     "fi",
 ]

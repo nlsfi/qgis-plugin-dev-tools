@@ -2,7 +2,7 @@
   name: update translations
   description: Ensures all the ts files are up to date.
   entry: qpdt transup --check-changes
-  language: system
+  language: python
   files: \.(py|ui)$
   require_serial: true
   pass_filenames: false
