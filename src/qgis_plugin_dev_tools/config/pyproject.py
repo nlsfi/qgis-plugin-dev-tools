@@ -1,4 +1,4 @@
-#  Copyright (C) 2022 National Land Survey of Finland
+#  Copyright (C) 2022-2026 National Land Survey of Finland
 #  (https://www.maanmittauslaitos.fi/en).
 #
 #
