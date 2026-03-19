@@ -7,3 +7,11 @@
   args: ["--check-changes"]
   require_serial: true
   pass_filenames: false
+
+- id: normalize-xml
+  name: Normalize XML
+  description: Normalize and clean up XML files by canonicalizing and removing specified tags.
+  entry: python -m hooks.normalize_xml
+  additional_dependencies: ["lxml"]
+  language: python
+  files: \.(xml|qml|ui)$

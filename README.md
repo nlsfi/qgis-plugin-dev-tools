@@ -188,6 +188,20 @@ workflow, add something like the below to the `repos` list in the project's `.pr
 
 ```
 
+### Normalize XML files
+
+This repository provides a hook for normalizing XML files. By default, the hook is applied to `.xml`, `.qml`, and `.ui` files; note that QML files may contain non-valid XML. In addition to formatting, the hook supports removing specific tags from the xml using the `--remove-tag` argument. Example usage:
+
+```yaml
+- repo: https://github.com/nlsfi/qgis-plugin-dev-tools
+  rev: v0.12.0
+  hooks:
+    - id: normalize-xml
+      args: [
+        "--remove-tag", "fieldConfiguration"
+      ]
+```
+
 ## Development of qgis-plugin-dev-tools
 
 See [development readme](./DEVELOPMENT.md).

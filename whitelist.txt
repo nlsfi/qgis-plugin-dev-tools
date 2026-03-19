@@ -41,3 +41,11 @@ qt5
 transcompile
 toml
 tmpdir
+lxml
+canonicalize
+xpath
+expr
+getparent
+tostring
+doctype
+docinfo
