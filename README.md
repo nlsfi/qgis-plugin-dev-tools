@@ -182,6 +182,7 @@ workflow, add something like the below to the `repos` list in the project's `.pr
   rev: v0.11.0
   hooks:
   - id: update-translations # runs "qgis-plugin-dev-tools transup" command
+    # language: system # on Windows you might want to set this to access PyQt5.pylupdate_main
     # args: ["--pyproject-toml", "path/to/pyproject.toml"] # optionally give path to pyproject.toml
     # The flag --check-changes flag is used, to leave it out, set args: []
 
