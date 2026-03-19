@@ -292,7 +292,7 @@ def test_update_ts_file_windows(tmp_path: Path, mocker: MockerFixture) -> None:
         "qgis_plugin_dev_tools.translations.update_translations.ensure_pylupdate_main"
     )
     mock_run = mocker.patch(
-        "qgis_plugin_dev_tools.update_translations.translations.run_command"
+        "qgis_plugin_dev_tools.translations.update_translations.run_command"
     )
     mock_temp_file = MagicMock()
     mock_temp_file.name = "temp.bat"

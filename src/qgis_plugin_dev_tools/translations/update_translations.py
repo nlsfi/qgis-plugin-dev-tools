@@ -15,12 +15,14 @@ def update_ts_file(
     pylupdate_command: str | None,
 ) -> None:
     """Update ts file with newest changes."""
+    LOGGER.debug("Translating files %s", translatable_files)
     if os.name == "nt":
         ensure_pylupdate_main()
         args = [
             ".venv\\Scripts\\python.exe",
             "-m",
             "PyQt5.pylupdate_main",
+            "-noobsolete",
             *map(str, translatable_files),
             "-ts",
             str(ts_output_file_path),
@@ -28,11 +30,12 @@ def update_ts_file(
 
         # Use temporary bat-file to by-pass "command line too long"
         # error in subprocess.Popen
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".bat") as temp_bat:
-            temp_bat_path = Path(temp_bat.name)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_bat_path = Path(tmpdir) / "qpdt-transup.bat"
             temp_bat_path.write_text(" ".join(args))
             LOGGER.info("Updating ts-file %s...", ts_output_file_path)
             run_command([str(temp_bat_path)])
+
     else:
         if not pylupdate_command:
             pylupdate_command = find_pylupdate()

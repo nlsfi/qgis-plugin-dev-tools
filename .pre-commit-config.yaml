@@ -1,4 +1,4 @@
-default_stages: [commit]
+default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -23,7 +23,6 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-requests==2.25.12
-          - typed-ast==1.5.5
   - repo: https://github.com/PyCQA/flake8
     rev: 7.3.0
     hooks:
