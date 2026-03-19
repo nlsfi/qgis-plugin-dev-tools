@@ -1,8 +1,9 @@
 - id: update-translations
   name: update translations
   description: Ensures all the ts files are up to date.
-  entry: qpdt transup --check-changes
+  entry: qpdt transup
   language: python
   files: \.(py|ui)$
+  args: ["--check-changes"]
   require_serial: true
   pass_filenames: false
