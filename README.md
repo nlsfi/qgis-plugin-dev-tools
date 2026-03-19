@@ -180,6 +180,8 @@ workflow, add something like the below to the `repos` list in the project's `.pr
   hooks:
   - id: update-translations # runs "qgis-plugin-dev-tools transup" command
     # args: ["--pyproject-toml", "path/to/pyproject.toml"] # optionally give path to pyproject.toml
+    # The flag --check-changes flag is used, to leave it out, set args: []
+
 ```
 
 ## Development of qgis-plugin-dev-tools
@@ -190,7 +192,7 @@ See [development readme](./DEVELOPMENT.md).
 
 Licensed under GNU GPL v3.0.
 
-Copyright (C) 2022 [National Land Survey of Finland].
+Copyright (C) 2022-2026 [National Land Survey of Finland].
 
 [Plugin Reloader]: https://plugins.qgis.org/plugins/plugin_reloader
 [National Land Survey of Finland]: https://www.maanmittauslaitos.fi/en
