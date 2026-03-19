@@ -179,7 +179,7 @@ workflow, add something like the below to the `repos` list in the project's `.pr
 
 ```yaml
 - repo: https://github.com/nlsfi/qgis-plugin-dev-tools
-  rev: 0.11.0
+  rev: v0.11.0
   hooks:
   - id: update-translations # runs "qgis-plugin-dev-tools transup" command
     # args: ["--pyproject-toml", "path/to/pyproject.toml"] # optionally give path to pyproject.toml
