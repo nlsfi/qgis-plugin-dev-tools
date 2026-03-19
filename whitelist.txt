@@ -40,3 +40,4 @@ transup
 qt5
 transcompile
 toml
+tmpdir

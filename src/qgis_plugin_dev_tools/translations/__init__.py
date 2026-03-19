@@ -26,15 +26,15 @@ def update_translation_files(
         py_files.extend(list(search_path.glob("**/*.py")))
         ui_files.extend(list(search_path.glob("**/*.ui")))
 
-    translatable_files = [*py_files, *ui_files]
+    translatable_files = [file_path.resolve() for file_path in [*py_files, *ui_files]]
 
     for language_code in language_codes:
         ts_file = destination_path / f"{language_code}.ts"
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".ts") as temp_file:
+        with tempfile.TemporaryDirectory() as tmpdir:
             backup_ts_file: Path | None = None
             if check_changes and ts_file.exists():
-                backup_ts_file = Path(temp_file.name)
+                backup_ts_file = Path(tmpdir) / "qpdt-backup.ts"
                 initial_unfinished_count = get_unfinished_translations_count(ts_file)
                 shutil.copy(ts_file, backup_ts_file)
 
@@ -47,7 +47,7 @@ def update_translation_files(
             # Move the original back if there changes
             new_unfinished_count = get_unfinished_translations_count(ts_file)
             if new_unfinished_count == initial_unfinished_count:
-                LOGGER.debug("No relevant changes in %s, restoring backup", ts_file)
+                LOGGER.info("No relevant changes in %s, restoring backup", ts_file)
                 shutil.copy(backup_ts_file, ts_file)
             else:
                 LOGGER.info("Updated translations in %s", ts_file)
