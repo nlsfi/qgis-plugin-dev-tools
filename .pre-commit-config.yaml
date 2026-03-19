@@ -41,3 +41,13 @@ repos:
     hooks:
       - id: markdownlint
         args: ["--fix"]
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.6
+    hooks:
+      - id: insert-license
+        name: insert copyright header
+        files: \.py$
+        args:
+          - --license-filepath
+          - .copyright-header.txt
+          - --use-current-year
