@@ -1,7 +1,7 @@
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -10,7 +10,7 @@ repos:
       - id: check-added-large-files
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.5
+    rev: b969e2851312ca2b24bbec879ba4954341d1bd12  # frozen: v0.15.5
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -18,13 +18,13 @@ repos:
       # Run the formatter.
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+    rev: a66e98df7b4aeeb3724184b332785976d062b92e  # frozen: v1.19.1
     hooks:
       - id: mypy
         additional_dependencies:
           - types-requests==2.25.12
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
+    rev: d93590f5be797aabb60e3b09f2f52dddb02f349f  # frozen: 7.3.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -32,17 +32,17 @@ repos:
           - flake8-spellcheck==0.28.0
           - flake8-qgis==1.0.0
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.1.1
+    rev: 3db014c16a9d31997ab8c07a4d61fcce936c8f0d  # frozen: v4.4.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.48.0
+    rev: e72a3ca1632f0b11a07d171449fe447a7ff6795e  # frozen: v0.48.0
     hooks:
       - id: markdownlint
         args: ["--fix"]
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.6
+    rev: ad1b27d73581aa16cca06fc4a0761fc563ffe8e8  # frozen: v1.5.6
     hooks:
       - id: insert-license
         name: insert copyright header
