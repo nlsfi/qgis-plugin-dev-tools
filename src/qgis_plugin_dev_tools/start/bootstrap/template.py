@@ -311,13 +311,13 @@ def _do_bootstrap(config: BootstrapConfig) -> None:
         _enable_extra_plugins(
             config.plugin_package_name, config.extra_plugin_package_names
         )
+        _start_debugger(
+            config.debugger_library, config.bootstrap_python_executable_path
+        )
         _enable_plugin(
             config.plugin_package_name,
             config.plugin_package_path,
             config.plugin_dependency_package_names,
-        )
-        _start_debugger(
-            config.debugger_library, config.bootstrap_python_executable_path
         )
 
     def _on_socket_error(error_type: QAbstractSocket.SocketError) -> None:
