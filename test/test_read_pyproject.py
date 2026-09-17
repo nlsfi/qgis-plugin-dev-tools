@@ -115,3 +115,35 @@ def test_section_read_to_dataclass(
     assert result.use_dangerous_vendor_sys_path_append
     assert result.auto_add_recursive_runtime_dependencies
     assert result.changelog_file_path == "../../CHANGELOG.md"
+
+
+def test_project_version_is_read(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
+):
+    test_file = create_pyproject_toml_with_contents(
+        [
+            "[project]",
+            'version = "1.2.3"',
+            "[tool.qgis_plugin_dev_tools]",
+            'plugin_package_name = "testing"',
+            'version_number_source = "pyproject"',
+        ]
+    )
+
+    config = read_pyproject_config(test_file)
+
+    assert config.version_number_source == "pyproject"
+    assert config.project_version == "1.2.3"
+
+
+def test_project_version_is_none_when_missing(
+    create_pyproject_toml_with_contents: Callable[[list[str]], Path],
+):
+    test_file = create_pyproject_toml_with_contents(
+        [
+            "[tool.qgis_plugin_dev_tools]",
+            'plugin_package_name = "testing"',
+        ]
+    )
+
+    assert read_pyproject_config(test_file).project_version is None

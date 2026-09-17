@@ -366,3 +366,24 @@ def _get_file_names(zip_file: Path, prefix: str) -> set[str]:
 def _get_file_from_zip(zip_file: Path, file_path: str) -> str:
     with zipfile.ZipFile(zip_file) as z, z.open(file_path) as f:
         return f.read().decode("UTF-8")
+
+
+def test_make_zip_uses_pyproject_version(
+    dev_tools_config_minimal: "DevToolsConfig", tmp_path: Path
+):
+    dev_tools_config_minimal.version_number_source = VersionNumberSource.PYPROJECT
+    dev_tools_config_minimal.project_version = "1.2.3"
+    target_path = tmp_path / "dist"
+
+    make_plugin_zip(dev_tools_config_minimal, target_path)
+
+    assert (target_path / "Plugin-1.2.3.zip").exists()
+
+
+def test_make_zip_fails_if_pyproject_version_missing(
+    dev_tools_config_minimal: "DevToolsConfig", tmp_path: Path
+):
+    dev_tools_config_minimal.version_number_source = VersionNumberSource.PYPROJECT
+
+    with pytest.raises(ValueError, match="version not found from pyproject"):
+        make_plugin_zip(dev_tools_config_minimal, tmp_path / "dist")

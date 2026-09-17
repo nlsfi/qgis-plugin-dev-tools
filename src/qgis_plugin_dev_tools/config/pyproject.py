@@ -39,7 +39,9 @@ class PyprojectConfig:
     runtime_requires: list[str] = field(default_factory=list)
     use_dangerous_vendor_sys_path_append: bool = False
     auto_add_recursive_runtime_dependencies: bool = False
-    version_number_source: Literal["changelog"] | Literal["distribution"] = "changelog"
+    version_number_source: Literal["changelog", "distribution", "pyproject"] = (
+        "changelog"
+    )
     disabled_extra_plugins: list[str] = field(default_factory=list)
     license_file_path: str | None = None
     changelog_file_path: str | None = None
@@ -48,9 +50,11 @@ class PyprojectConfig:
     translation_search_paths: list[Path] = field(default_factory=list)
     translation_destination_path: str | None = None
     translation_pylupdate_command: str | None = None
+    # read from [project] section, not from the tool section
+    project_version: str | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
-        if self.version_number_source not in ["changelog", "distribution"]:
+        if self.version_number_source not in ["changelog", "distribution", "pyproject"]:
             raise ValueError(
                 f"invalid value for version_number_source={self.version_number_source}"
             )
@@ -64,6 +68,8 @@ def read_pyproject_config(pyproject_file_path: Path) -> PyprojectConfig:
             dev_tools_configuration = config.get("tool", {})[
                 PyprojectConfig.DEV_TOOLS_SECTION_LOCATOR
             ]
-            return PyprojectConfig(**dev_tools_configuration)
+            pyproject_config = PyprojectConfig(**dev_tools_configuration)
+            pyproject_config.project_version = config.get("project", {}).get("version")
+            return pyproject_config
         except (KeyError, TypeError) as e:
             raise ValueError(f"dev tools config invalid in pyproject.toml: {e}") from e

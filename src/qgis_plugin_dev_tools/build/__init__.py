@@ -50,6 +50,13 @@ def _infer_version_from_source_files(dev_tools_config: DevToolsConfig) -> str:
         return get_package_version_from_distribution(
             dev_tools_config.plugin_package_name
         )
+    if dev_tools_config.version_number_source == VersionNumberSource.PYPROJECT:
+        if dev_tools_config.project_version is None:
+            raise ValueError(
+                "version not found from pyproject.toml [project] section,"
+                ' use version_number_source = "distribution" for dynamic versions'
+            )
+        return dev_tools_config.project_version
     raise ValueError(f"unsupported source {dev_tools_config.version_number_source}")
 
 
