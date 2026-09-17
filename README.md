@@ -53,12 +53,12 @@ runtime_requires = [
 use_dangerous_vendor_sys_path_append = true
 ```
 
-By default build version number is read from changelog top-most second level heading having format `## version anything`. This behaviour is configurable with `version_number_source` to use plugin package distribution metadata. Optionally, the version number can also be provided as an argument for the build script using `qpdt b --version 0.1.0-rc2`.
+By default build version number is read from changelog top-most second level heading having format `## version anything`. This behaviour is configurable with `version_number_source` to use plugin package distribution metadata or the static `version` in the `[project]` section of `pyproject.toml`. Optionally, the version number can also be provided as an argument for the build script using `qpdt b --version 0.1.0-rc2`.
 
 ```toml
 [tool.qgis_plugin_dev_tools]
 plugin_package_name = "your_plugin_package_name"
-version_number_source = "distribution"  # or "changelog" (default if missing)
+version_number_source = "distribution"  # or "pyproject" or "changelog" (default if missing)
 ```
 
 Changelog path can be configured with `changelog_file_path` option. By default it is assumed to be `CHANGELOG.md` in the same directory as `pyproject.toml`.

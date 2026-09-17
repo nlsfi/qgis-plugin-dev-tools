@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Feat: add "pyproject" option for version_number_source
+
 ## [0.12.0] - 2026-03-19
 
 - Feat: add normalize xml hook

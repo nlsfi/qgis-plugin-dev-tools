@@ -32,6 +32,7 @@ from qgis_plugin_dev_tools.utils.distributions import get_distribution_requireme
 class VersionNumberSource(Enum):
     CHANGELOG = auto()
     DISTRIBUTION = auto()
+    PYPROJECT = auto()
 
     @staticmethod
     def from_config_value(config_value: str) -> "VersionNumberSource":
@@ -56,6 +57,7 @@ class DevToolsConfig:
     translation_search_paths: list[Path]
     translation_destination_path: Path | None
     translation_pylupdate_command: str | None
+    project_version: str | None
 
     def __init__(  # noqa: PLR0913
         self,
@@ -73,6 +75,7 @@ class DevToolsConfig:
         translation_search_paths: list[Path],
         translation_destination_path: Path | None,
         translation_pylupdate_command: str | None,
+        project_version: str | None = None,
     ) -> None:
         plugin_package_spec = find_spec(plugin_package_name)
         if plugin_package_spec is None or plugin_package_spec.origin is None:
@@ -98,6 +101,7 @@ class DevToolsConfig:
         self.translation_search_paths = translation_search_paths
         self.translation_destination_path = translation_destination_path
         self.translation_pylupdate_command = translation_pylupdate_command
+        self.project_version = project_version
 
         if auto_add_recursive_runtime_dependencies:
             # Add the requirements of the distributions as well
@@ -153,4 +157,5 @@ class DevToolsConfig:
             if pyproject_config.translation_destination_path
             else None,
             translation_pylupdate_command=pyproject_config.translation_pylupdate_command,
+            project_version=pyproject_config.project_version,
         )
