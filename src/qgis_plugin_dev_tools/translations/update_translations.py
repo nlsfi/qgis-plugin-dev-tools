@@ -59,9 +59,12 @@ def update_ts_file(
         if not pylupdate_command:
             pylupdate_command = find_pylupdate()
 
+        no_obsolete_flag = (
+            "--no-obsolete" if pylupdate_command == "pylupdate6" else "-noobsolete"
+        )
         args = [
             pylupdate_command,
-            "-noobsolete",
+            no_obsolete_flag,
             *map(str, translatable_files),
             "-ts",
             str(ts_output_file_path),

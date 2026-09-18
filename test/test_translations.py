@@ -259,15 +259,24 @@ def test_find_pylupdate_raises_when_not_found(mocker: MockerFixture) -> None:
         find_pylupdate()
 
 
+@pytest.mark.parametrize(
+    ("pylupdate_command", "expected_no_obsolete_flag"),
+    [("pylupdate5", "-noobsolete"), ("pylupdate6", "--no-obsolete")],
+)
 @pytest.mark.skipif(os.name != "posix", reason="Non-Windows test")
-def test_update_ts_file_unix(tmp_path: Path, mocker: MockerFixture) -> None:
+def test_update_ts_file_unix(
+    tmp_path: Path,
+    mocker: MockerFixture,
+    pylupdate_command: str,
+    expected_no_obsolete_flag: str,
+) -> None:
     py_file = tmp_path / "test.py"
     py_file.write_text('tr("Test")')
     ts_file = tmp_path / "test.ts"
 
     mocker.patch(
         "qgis_plugin_dev_tools.translations.update_translations.find_pylupdate",
-        return_value="pylupdate5",
+        return_value=pylupdate_command,
     )
     mock_run = mocker.patch(
         "qgis_plugin_dev_tools.translations.update_translations.run_command"
@@ -277,8 +286,8 @@ def test_update_ts_file_unix(tmp_path: Path, mocker: MockerFixture) -> None:
 
     mock_run.assert_called_once()
     args = mock_run.call_args[0][0]
-    assert args[0] == "pylupdate5"
-    assert "-noobsolete" in args
+    assert args[0] == pylupdate_command
+    assert expected_no_obsolete_flag in args
     assert str(py_file) in args
     assert "-ts" in args
     assert str(ts_file) in args
