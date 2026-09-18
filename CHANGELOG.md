@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Fix: use correct "no obsolete" flag with pylupdate6
+
 ## 0.13.0 - 2026-09-17
 
 - Feat: add "pyproject" option for version_number_source
