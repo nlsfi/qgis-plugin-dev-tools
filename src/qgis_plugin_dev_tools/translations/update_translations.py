@@ -36,9 +36,8 @@ def update_ts_file(
     """Update ts file with newest changes."""
     LOGGER.debug("Translating files %s", translatable_files)
     if os.name == "nt":
-        ensure_pylupdate_main()
         args = [
-            ".venv\\Scripts\\python.exe",
+            find_pylupdate_python(),
             "-m",
             "PyQt5.pylupdate_main",
             "-noobsolete",
@@ -93,14 +92,26 @@ def run_command(args: list[str]) -> None:
         sys.exit(1)
 
 
-def ensure_pylupdate_main() -> None:
-    """Check if PyQt5.pylupdate_main can be executed with python -m."""
-    try:
-        from PyQt5.pylupdate_main import main as pylupdate_main  # noqa: F401, QGS103
-    except ImportError:
-        raise ImportError(
-            "Could not find PyQt5.pylupdate_main in environment."
-        ) from None
+def find_pylupdate_python() -> str:
+    """
+    Find a python interpreter which can run PyQt5.pylupdate_main with python -m."""
+    candidates = [sys.executable, str(Path(".venv", "Scripts", "python.exe"))]
+    for candidate in candidates:
+        if Path(candidate).exists() and _can_import_pylupdate_main(candidate):
+            return candidate
+    raise ImportError(
+        "Could not find PyQt5.pylupdate_main in environment. "
+        f"Tried python interpreters: {', '.join(candidates)}"
+    )
+
+
+def _can_import_pylupdate_main(python_executable: str) -> bool:
+    result = subprocess.run(
+        [python_executable, "-c", "import PyQt5.pylupdate_main"],
+        capture_output=True,
+        check=False,
+    )
+    return result.returncode == 0
 
 
 def find_pylupdate() -> str:
