@@ -19,6 +19,7 @@
 
 import os
 import shutil
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -30,8 +31,8 @@ from qgis_plugin_dev_tools.translations import (
     update_translation_files,
 )
 from qgis_plugin_dev_tools.translations.update_translations import (
-    ensure_pylupdate_main,
     find_pylupdate,
+    find_pylupdate_python,
     run_command,
     update_ts_file,
 )
@@ -200,16 +201,36 @@ def test_run_command_exits_on_error(mocker: MockerFixture) -> None:
         run_command(["command"])
 
 
-def test_ensure_pylupdate_main_success(mocker: MockerFixture) -> None:
-    mocker.patch.dict(
-        "sys.modules", {"PyQt5.pylupdate_main": MagicMock(main=lambda: None)}
+def test_find_pylupdate_python_prefers_current_interpreter(
+    mocker: MockerFixture,
+) -> None:
+    mock_run = mocker.patch("subprocess.run", return_value=MagicMock(returncode=0))
+
+    assert find_pylupdate_python() == sys.executable
+    assert mock_run.call_args[0][0][0] == sys.executable
+
+
+def test_find_pylupdate_python_falls_back_to_project_venv(
+    mocker: MockerFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    venv_python = Path(".venv", "Scripts", "python.exe")
+    monkeypatch.chdir(tmp_path)
+    venv_python.parent.mkdir(parents=True)
+    venv_python.touch()
+    mocker.patch(
+        "subprocess.run",
+        side_effect=[MagicMock(returncode=1), MagicMock(returncode=0)],
     )
-    # Should not raise
-    ensure_pylupdate_main()
+
+    assert find_pylupdate_python() == str(venv_python)
 
 
-def test_ensure_pylupdate_main_missing(mocker: MockerFixture) -> None:
-    mocker.patch.dict("sys.modules", {"PyQt5.pylupdate_main": None})
+def test_find_pylupdate_python_missing(
+    mocker: MockerFixture, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    mocker.patch("subprocess.run", return_value=MagicMock(returncode=1))
+
     with pytest.raises(ImportError, match=r"Could not find PyQt5.pylupdate_main"):
         ensure_pylupdate_main()
 
