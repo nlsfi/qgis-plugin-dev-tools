@@ -232,7 +232,36 @@ def test_find_pylupdate_python_missing(
     mocker.patch("subprocess.run", return_value=MagicMock(returncode=1))
 
     with pytest.raises(ImportError, match=r"Could not find PyQt5.pylupdate_main"):
-        ensure_pylupdate_main()
+        find_pylupdate_python()
+
+
+def test_update_ts_file_on_windows_quotes_paths_with_spaces(
+    mocker: MockerFixture, tmp_path: Path
+) -> None:
+    mock_os = mocker.patch("qgis_plugin_dev_tools.translations.update_translations.os")
+    mock_os.name = "nt"
+    mocker.patch(
+        "qgis_plugin_dev_tools.translations.update_translations.find_pylupdate_python",
+        return_value="C:\\Users\\John Doe\\.venv\\Scripts\\python.exe",
+    )
+    bat_contents: list[str] = []
+    mocker.patch(
+        "qgis_plugin_dev_tools.translations.update_translations.run_command",
+        side_effect=lambda args: bat_contents.append(Path(args[0]).read_text()),
+    )
+
+    update_ts_file(
+        [Path("C:/Users/John Doe/plugin/module 1.py"), Path("C:/100%/module2.py")],
+        Path("C:/Users/John Doe/plugin/fi.ts"),
+        pylupdate_command=None,
+    )
+
+    assert bat_contents == [
+        '"C:\\Users\\John Doe\\.venv\\Scripts\\python.exe" -m PyQt5.pylupdate_main '
+        f'-noobsolete "{Path("C:/Users/John Doe/plugin/module 1.py")}" '
+        f"{Path('C:/100%%/module2.py')} "
+        f'-ts "{Path("C:/Users/John Doe/plugin/fi.ts")}"'
+    ]
 
 
 def test_find_pylupdate_from_env_var(mocker: MockerFixture) -> None:
@@ -338,7 +367,7 @@ def test_update_ts_file_windows(tmp_path: Path, mocker: MockerFixture) -> None:
     ts_file = tmp_path / "test.ts"
 
     mocker.patch(
-        "qgis_plugin_dev_tools.translations.update_translations.ensure_pylupdate_main"
+        "qgis_plugin_dev_tools.translations.update_translations.find_pylupdate_python"
     )
     mock_run = mocker.patch(
         "qgis_plugin_dev_tools.translations.update_translations.run_command"

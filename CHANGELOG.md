@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- Fix: support paths with spaces when updating translations on Windows
 - Fix: find PyQt5.pylupdate_main from project .venv when running as a pre-commit hook on Windows
 
 ## 0.13.1 - 2026-09-18
