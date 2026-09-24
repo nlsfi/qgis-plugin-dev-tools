@@ -50,7 +50,7 @@ def update_ts_file(
         # error in subprocess.Popen
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_bat_path = Path(tmpdir) / "qpdt-transup.bat"
-            temp_bat_path.write_text(" ".join(args))
+            temp_bat_path.write_text(subprocess.list2cmdline(args).replace("%", "%%"))
             LOGGER.info("Updating ts-file %s...", ts_output_file_path)
             run_command([str(temp_bat_path)])
 

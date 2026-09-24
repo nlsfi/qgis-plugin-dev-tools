@@ -49,3 +49,4 @@ getparent
 tostring
 doctype
 docinfo
+list2cmdline
