@@ -91,7 +91,7 @@ By default username and password are read from `QPDT_PUBLISH_USERNAME` and `QPDT
 
 ## Updating translations
 
-Run `qgis-plugin-dev-tools transup` (short `qpdt ts`) to creat or update ts files for translating the plugin. This command can be configured with:
+Run `qgis-plugin-dev-tools transup` (short `qpdt ts`) to create or update ts files for translating the plugin. This command can be configured with:
 
 ```toml
 [tool.qgis_plugin_dev_tools]
@@ -119,7 +119,7 @@ Run `qgis-plugin-dev-tools transcompile` (short `qpdt tc`) to compile ts files i
 This command reads the same configuration as `transup` command.
 
 > [!WARNING]
-> Usually "lrelease" binary does not ship on Windows when installing QGIS. In that case use Qt-linguiest (linguist.exe) to compile translations.
+> Usually "lrelease" binary does not ship on Windows when installing QGIS. In that case use Qt-linguist (linguist.exe) to compile translations.
 
 ## Plugin development mode
 
@@ -146,7 +146,7 @@ plugin_package_name = "your_plugin_package_name"
 env_file_path = "../../.env"
 ```
 
-Development mode bootstraps the launched QGIS to have access to any packages available to the launching python environment, setups enviroment variables, configures a debugger, and installs and enables the developed plugin package.
+Development mode bootstraps the launched QGIS to have access to any packages available to the launching python environment, setups environment variables, configures a debugger, and installs and enables the developed plugin package.
 
 Additionally editable installs for the plugin dependencies are supported. For example with a dependency to `some_pypi_package`, use `pip install -e /path/to/some_pypi_package` to provide `some_pypi_package` in editable mode from a local directory, and use [Plugin Reloader] to refresh new code when its changed on disk. This will also reload the declared dependencies.
 
@@ -175,11 +175,14 @@ disabled_extra_plugins = [
 ## Use with pre-commit
 
 Some of the qgis-plugin-dev-tools commands are exposed as pre-commit hooks to be run with tools like pre-commit and prek.
-workflow, add something like the below to the `repos` list in the project's `.pre-commit-config.yaml`:
+
+### Update translation files
+
+To keep ts files up to date automatically, add something like the below to the `repos` list in the project's `.pre-commit-config.yaml`:
 
 ```yaml
 - repo: https://github.com/nlsfi/qgis-plugin-dev-tools
-  rev: v0.11.0
+  rev: v0.13.2
   hooks:
   - id: update-translations # runs "qgis-plugin-dev-tools transup" command
     # language: system # on Windows you might want to set this to access PyQt5.pylupdate_main
@@ -194,7 +197,7 @@ This repository provides a hook for normalizing XML files. By default, the hook 
 
 ```yaml
 - repo: https://github.com/nlsfi/qgis-plugin-dev-tools
-  rev: v0.12.0
+  rev: v0.13.2
   hooks:
     - id: normalize-xml
       args: [
